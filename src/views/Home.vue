@@ -1,14 +1,26 @@
 <template>
-  <section>
-    <v-responsive class="mx-auto" max-width="344">
+  <section style="height: 100%">
+    <v-responsive class="mx-auto" max-width="444" height="100%">
       <v-text-field
         label="search"
         variant="underlined"
         v-model="filterBy"
         @input="debouncedSetFilterBy"
-      />
+      ></v-text-field>
+      <div class="place-holder" style="position: relative; margin: 0 auto; "></div>
+      <v-menu
+        v-model="showMenu"
+        attach=".place-holder"
+        location="top"
+        min-width="100%"
+        :close-on-content-click="false"
+        :persistent="true"
+        min-height="100%"
+      >
+        <List v-if="swData" :swData="swData" :filterBy="getFilterBy"></List>
+      </v-menu>
     </v-responsive>
-    <List v-if="swData" :swData="swData" :filterBy="getFilterBy" @setCategory="setCategory"></List>
+    <!-- <List v-if="swData" :swData="swData" :filterBy="getFilterBy"></List> -->
   </section>
 </template>
 
@@ -20,8 +32,7 @@ export default {
   data() {
     return {
       filterBy: "",
-      drawer: false,
-      group: null,
+      showMenu: false,
       items: [
         {
           title: "Foo",
@@ -42,21 +53,16 @@ export default {
       ]
     };
   },
-  watch: {
-    group() {
-      this.drawer = false;
-    }
-  },
-  created() {
+
+  async created() {
     this.debouncedSetFilterBy = utilService.debounce(this.setFilterBy, 200);
+    this.$store.commit({ type: "setCategory", category: "" });
   },
   methods: {
     setFilterBy() {
-      this.drawer = this.filterBy ? true : false;
+      this.showMenu = this.filterBy ? true : false;
+      console.log("this.showMenu ", this.showMenu);
       this.$store.dispatch({ type: "setFilter", filterBy: this.filterBy });
-    },
-    setCategory(category){
-      this.$router.push(`/${category}/${this.getFilterBy}`)
     }
   },
   computed: {

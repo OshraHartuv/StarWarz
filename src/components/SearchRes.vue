@@ -1,33 +1,30 @@
 <template>
-  <!--     <v-navigation-drawer v-model="drawer" location="bottom" temporary>
-      <v-list :items="items"></v-list>
-    </v-navigation-drawer> -->
   <v-row>
-    <v-col v-for="(categoryResults, category) in swData" :key="category" cols="12">
+    <v-col v-if="allCategoriesAreEmpty">
       <v-card>
         <v-list>
-          <v-list-subheader>{{ category }}</v-list-subheader>
-          <div v-if="categoryResults && categoryResults.length">
-            <div v-for="result in categoryResults" :key="result">
-              <v-list-item>
-                <v-list-item-title>{{result.name}}</v-list-item-title>
-              </v-list-item>
-            </div>
-            <v-list-item>
-              <v-list-item-title @click="setCategory(category)">see more {{ category }}</v-list-item-title>
-            </v-list-item>
-          </div>
-          <div v-else>
-            <v-list-item>
-              <v-list-item-title>No matching results</v-list-item-title>
-            </v-list-item>
-          </div>
+          <v-list-subheader>No matching results</v-list-subheader>
         </v-list>
       </v-card>
     </v-col>
+    <v-col v-else v-for="(categoryResults, category) in swData" :key="category" cols="12">
+      <div v-if="categoryResults && categoryResults.length">
+        <v-list>
+          <v-list-header>{{ category }}</v-list-header>
+          <div v-for="result in categoryResults" :key="result">
+            <v-list-item>
+              <v-list-item-title>{{result.name}}</v-list-item-title>
+            </v-list-item>
+          </div>
+         
+            <v-list-subheader
+              @click="$router.push(`/${category}/${filterBy}`)"
+            >View all {{ category }}</v-list-subheader>
+     
+        </v-list>
+      </div>
+    </v-col>
   </v-row>
-  
-
 </template>
 
 <script>
@@ -36,15 +33,15 @@ export default {
     swData: {
       type: Object
     },
-    filterBy:{
-      type:String
+    filterBy: {
+      type: String
     }
   },
-  methods:{
-    setCategory(category){
-      this.$emit('setCategory', category)
+  computed: {
+    allCategoriesAreEmpty() {
+      const searchResults = Object.values(this.swData);
+      return searchResults.every(result => !result.length);
     }
   }
-
 };
 </script>

@@ -1,10 +1,12 @@
-import { createStore } from 'vuex'
+import { createStore, createLogger } from 'vuex'
 import { service } from '@/services/service.js'
 import { swapiService } from '@/services/swapi.service.js'
 import peopleModule from './modules/people.module'
 
+
 const store = createStore({
     strict: true,
+    plugins:[createLogger()],
     state: {
         swData: null,
         filterBy: '',
@@ -32,17 +34,17 @@ const store = createStore({
         },
         categoryRes({ swData, category, pageIdx, pageSize }) {
             if (!swData || !category || !swData[category]) return
-            const categoryData = swData[category]
+            const categoryData = JSON.parse(JSON.stringify(swData[category]))
             const { count, results } = categoryData
+            if (!results || !count) return
             const pageEndIdx = count >= (pageIdx + 1) * pageSize ? (pageIdx + 1) * pageSize : count
             return results.slice(pageIdx * pageSize, pageEndIdx)
         },
-        hasNextPage({ swData, pageIdx, pageSize ,category}) {
-            if (!swData || !category || !swData[category]) return 
-            console.log('swData ',swData);
+        hasNextPage({ swData, pageIdx, pageSize, category }) {
+            if (!swData || !category || !swData[category]) return
+
             const { count } = swData[category]
-            console.log('count ',count);
-            return count > ((pageIdx + 1) * pageSize)
+            return count > (pageIdx + 1) * pageSize
         },
         hasPrevPage({ pageIdx }) {
             return pageIdx > 0
@@ -65,10 +67,9 @@ const store = createStore({
         setPage(state, { diff }) {
             state.pageIdx += diff
         },
-
     },
     actions: {
-        async loadResults({ commit, state }) {
+        async loadResults({ commit, dispatch, state }) {
             try {
                 if (!state.filterBy) return commit({ type: 'setSwData', swData: {} })
                 const swData = await swapiService.getSwDataBySearch(state.filterBy)
@@ -78,9 +79,9 @@ const store = createStore({
                 throw err
             }
         },
-        async setFilter({ commit, dispatch }, { filterBy }) {
+        async setFilter({ commit, dispatch ,state}, { filterBy }) {
             commit({ type: 'setFilter', filterBy })
-            await dispatch({ type: 'loadResults' })
+            if (!state.category) await dispatch({ type: 'loadResults' })
         },
         async setPage({ commit, dispatch }, { diff }) {
             console.log('setting page')
@@ -113,11 +114,12 @@ const store = createStore({
         async setCategory({ commit, state }, { category }) {
             const { swData, filterBy } = state
             commit({ type: 'setCategory', category })
-
-            if (swData && swData[category]) return
+            if (!category || (swData && swData[category])) return
             try {
-                const newData = await service.loadCategoryData(category, filterBy)
-                commit({ type: 'setSwData', swData: newData })
+                const newCategoryData = await swapiService.loadSwCategoryData(category, filterBy)
+                const swDataCopy = JSON.parse(JSON.stringify(swData)) || {}
+                swDataCopy[category] = newCategoryData
+                commit({ type: 'setSwData', swData: swDataCopy })
             } catch (err) {
                 console.error(`Error while setting category => ${err.message}`)
                 throw err

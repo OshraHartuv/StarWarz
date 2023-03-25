@@ -7,7 +7,7 @@ const CATEGORIES = ['vehicles', 'people']
 
 async function getSwDataBySearch(searchTerm) {
     try {
-        const prms = CATEGORIES.map((category) => _loadSwData(category, searchTerm))
+        const prms = CATEGORIES.map((category) => loadSwCategoryData(category, searchTerm))
         const values = await Promise.all(prms)
         const dataBySearchTerm = values.reduce((acc, data) => {
             const categoryName = _getCategoryName(data.url)
@@ -23,7 +23,7 @@ async function getSwDataBySearch(searchTerm) {
 
 async function getNextPage(category, searchTerm) {
     try {
-        const currSwCategoryData = await _loadSwData(category, searchTerm)
+        const currSwCategoryData = await loadSwCategoryData(category, searchTerm)
         const newSwCategoryData = await axios.get(currSwCategoryData.next)
         const { data } = newSwCategoryData
         _makeIds(data.results)
@@ -37,37 +37,16 @@ async function getNextPage(category, searchTerm) {
     }
 }
 
-async function loadSwCategoryData(category, searchTerm) {
-    //     // const storageKey = STORAGE_KEY + searchTerm;
-    //     const storageKey = 'data'
-    //     let starWarData = _loadFromStorage(storageKey) || {}
-    //     if (!starWarData[category]) {
-    //         try {
-    //             const res = await axios.get(SWAPI_URL + category + '/', {
-    //                 params: { search: searchTerm },
-    //             })
-    //             const { data } = res
-    //             _makeId(data.results)
-    //             starWarData[category] = data
-    //         } catch (err) {
-    //             console.error(`Error while loading category data => service.js:(23) => ${err.message}`);
-    //             throw err;
-    //         }
-    //     }
-    //     gStarWarData = starWarData
-    //     _saveToStorage(storageKey)
-    //     return JSON.parse(JSON.stringify(starWarData))
-}
 
 function getCategories() {
     return [...CATEGORIES]
 }
 
-async function _loadSwData(category, searchTerm) {
-    return _loadSwDataFromCache(category, searchTerm) || (await _loadSwDataFromApi(category, searchTerm))
+async function loadSwCategoryData(category, searchTerm) {
+    return _loadSwCategoryDataFromCache(category, searchTerm) || (await _loadSwCategoryDataFromApi(category, searchTerm))
 }
 
-function _loadSwDataFromCache(category, searchTerm) {
+function _loadSwCategoryDataFromCache(category, searchTerm) {
     console.log('Getting data from cache')
     let cachedData = localStorage.getItem(category)
     if (!cachedData) return null
@@ -75,7 +54,7 @@ function _loadSwDataFromCache(category, searchTerm) {
     return cachedData[searchTerm] ? cachedData[searchTerm] : null
 }
 
-async function _loadSwDataFromApi(category, searchTerm) {
+async function _loadSwCategoryDataFromApi(category, searchTerm) {
     console.log('Getting data from api')
     try {
         const response = await axios.get(`${SWAPI_BASE_URL}${category}/?search=${searchTerm}`)
