@@ -62,8 +62,8 @@ const store = createStore({
                 const swData = await service.getSearchData(state.filterBy)
                 commit({ type: 'setData', swData })
             } catch (err) {
-                console.log('err in store=> loadResults:', err)
-                throw new Error(err)
+                console.error(`Error while loading results => index.js:(65) => ${err.message}`)
+                throw err
             }
         },
         async setFilter({ commit, dispatch }, { filterBy }) {
@@ -94,15 +94,21 @@ const store = createStore({
                 commit({ type: 'setPage', diff })
                 commit({ type: 'setCategoryData', categoryData: newCategoryData })
             } catch (err) {
-                console.log('err ', err)
+                console.error(`Error while loading next page => index.js:(97) => ${err.message}`)
+                throw err
             }
         },
         async setCategory({ commit, state }, { category }) {
             const { swData, filterBy } = state
             commit({ type: 'setCategory', category })
-            if (!swData || !swData[category]) {
+
+            if (swData && swData[category]) return
+            try {
                 const newData = await service.loadCategoryData(category, filterBy)
                 commit({ type: 'setData', swData: newData })
+            } catch (err) {
+                console.error(`Error while setting category => index.js:(111) => ${err.message}`)
+                throw err
             }
         },
     },

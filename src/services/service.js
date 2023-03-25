@@ -2,9 +2,10 @@ import axios from 'axios'
 import { utilService } from './util-service.js'
 
 const SWAPI_URL = 'https://swapi.dev/api/'
+const STORAGE_KEY = 'SW_'
+const CATEGORIES = ['planets', 'starships', 'vehicles', 'people', 'films', 'species']
+
 var gStarWarData = {}
-const STORAGE_KEY = 'SW-'
-const gCategories = ['planets', 'starships', 'vehicles', 'people', 'films', 'species']
 
 async function loadCategoryData(category, searchTerm) {
     // const storageKey = STORAGE_KEY + searchTerm;
@@ -19,7 +20,8 @@ async function loadCategoryData(category, searchTerm) {
             _makeId(data.results)
             starWarData[category] = data
         } catch (err) {
-            console.log('err ', err)
+            console.error(`Error while loading category data => service.js:(23) => ${err.message}`);
+            throw err;
         }
     }
     gStarWarData = starWarData
@@ -34,7 +36,7 @@ async function getSearchData(searchTerm) {
     if (!starWarData) {
         console.log('axiosing.............')
         try {
-            const prms = gCategories.map((category) =>
+            const prms = CATEGORIES.map((category) =>
                 axios.get(SWAPI_URL + category + '/', {
                     params: { search: searchTerm },
                 })
@@ -49,8 +51,8 @@ async function getSearchData(searchTerm) {
             gStarWarData = starWarData
             _saveToStorage(storageKey)
         } catch (err) {
-            console.log('err in service=> getSearchData:', err)
-            throw new Error(err)
+            console.error(`Error while getting search data => service.js:(53) => ${err.message}`)
+            throw err
         }
     }
     return JSON.parse(JSON.stringify(starWarData))
@@ -70,8 +72,8 @@ async function getNextPage(currData, category, filterBy) {
         _saveToStorage(storageKey)
         return JSON.parse(JSON.stringify(gStarWarData[category]))
     } catch (err) {
-        console.log('err ', err)
-        throw new Error(err)
+       console.error(`Error while getting next page => service.js:(74) => ${err.message}`);
+       throw err;
     }
 }
 
@@ -94,7 +96,7 @@ function _makeId(entities) {
 }
 
 function getCategoryNames() {
-    return [...gCategories]
+    return [...CATEGORIES]
 }
 
 export const service = {
