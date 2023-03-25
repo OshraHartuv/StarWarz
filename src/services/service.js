@@ -92,7 +92,7 @@ function _loadFromStorage(key) {
 }
 
 function _makeId(entities) {
-    if (entities && entities.length) entities.forEach((entity) => (entity.id = utilService.makeId()))
+    if (entities && entities.length) entities.forEach((entity) => (entity._id = utilService.makeId()))
 }
 
 function getCategoryNames() {

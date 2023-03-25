@@ -1,5 +1,6 @@
 import { createStore } from 'vuex'
 import { service } from '@/services/service.js'
+import { swapiService } from '@/services/swapi.service.js'
 import peopleModule from './modules/people.module'
 
 const store = createStore({
@@ -36,9 +37,19 @@ const store = createStore({
             const pageEndIdx = count >= (pageIdx + 1) * pageSize ? (pageIdx + 1) * pageSize : count
             return results.slice(pageIdx * pageSize, pageEndIdx)
         },
+        hasNextPage({ swData, pageIdx, pageSize ,category}) {
+            if (!swData || !category || !swData[category]) return 
+            console.log('swData ',swData);
+            const { count } = swData[category]
+            console.log('count ',count);
+            return count > ((pageIdx + 1) * pageSize)
+        },
+        hasPrevPage({ pageIdx }) {
+            return pageIdx > 0
+        },
     },
     mutations: {
-        setData(state, { swData }) {
+        setSwData(state, { swData }) {
             state.swData = swData
         },
         setFilter(state, { filterBy }) {
@@ -54,15 +65,16 @@ const store = createStore({
         setPage(state, { diff }) {
             state.pageIdx += diff
         },
+
     },
     actions: {
         async loadResults({ commit, state }) {
             try {
-                if (!state.filterBy) commit({ type: 'setData', swData: '' })
-                const swData = await service.getSearchData(state.filterBy)
-                commit({ type: 'setData', swData })
+                if (!state.filterBy) return commit({ type: 'setSwData', swData: {} })
+                const swData = await swapiService.getSwDataBySearch(state.filterBy)
+                commit({ type: 'setSwData', swData })
             } catch (err) {
-                console.error(`Error while loading results => index.js:(65) => ${err.message}`)
+                console.error(`Error while loading results => ${err.message}`)
                 throw err
             }
         },
@@ -90,11 +102,11 @@ const store = createStore({
             // Fetching
             console.log('going to swapi')
             try {
-                const newCategoryData = await service.getNextPage(currData, category, filterBy)
+                const newCategoryData = await swapiService.getNextPage(category, filterBy)
                 commit({ type: 'setPage', diff })
                 commit({ type: 'setCategoryData', categoryData: newCategoryData })
             } catch (err) {
-                console.error(`Error while loading next page => index.js:(97) => ${err.message}`)
+                console.error(`Error while loading next page =>  ${err.message}`)
                 throw err
             }
         },
@@ -105,9 +117,9 @@ const store = createStore({
             if (swData && swData[category]) return
             try {
                 const newData = await service.loadCategoryData(category, filterBy)
-                commit({ type: 'setData', swData: newData })
+                commit({ type: 'setSwData', swData: newData })
             } catch (err) {
-                console.error(`Error while setting category => index.js:(111) => ${err.message}`)
+                console.error(`Error while setting category => ${err.message}`)
                 throw err
             }
         },

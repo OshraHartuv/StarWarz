@@ -7,7 +7,7 @@
         </v-list>
       </v-card>
     </v-col>
-    <button v-if="hasPrevPage" @click="getPage(-1)">Prev</button>
+    <button v-if="hasPrevPage" @click="getPage(-1)">Previous</button>
     <button v-if="hasNextPage" @click="getPage(1)">Next</button>
   </v-row>
   <!-- <ResTable ></ResTable> -->
@@ -23,7 +23,8 @@ export default {
         try {
           await this.$store.dispatch({ type: "setCategory", category });
         } catch (err) {
-          console.log("err ", err);
+          console.error(`Error while setting category => ${err.message}`);
+          // Notification
         }
       },
       deep: true,
@@ -33,9 +34,11 @@ export default {
       async handler(filterBy) {
         if (this.filterBy && this.filterBy === filterBy) return;
         try {
+          console.log('not the same filtur');
           await this.$store.dispatch({ type: "setFilter", filterBy });
         } catch (err) {
-          console.log("err ", err);
+          console.error(`Error while setting filter => ${err.message}`);
+          // Notification
         }
       },
       deep: true,
@@ -44,7 +47,12 @@ export default {
   },
   methods: {
     async getPage(diff) {
-      await this.$store.dispatch({ type: "setPage", diff });
+      try{
+        await this.$store.dispatch({ type: "setPage", diff });
+      }catch(err){
+        console.error(`Error while setting page => ${err.message}`);
+        // Notification
+      }
     }
   },
   computed: {
@@ -57,23 +65,14 @@ export default {
     results() {
       return this.$store.getters.categoryRes;
     },
-    count() {
-      return this.$store.getters.categoryCount;
-    },
     filterBy() {
       return this.$store.getters.filterBy;
     },
-    pageIdx() {
-      return this.$store.state.pageIdx;
-    },
-    pageSize() {
-      return this.$store.state.pageSize;
-    },
     hasNextPage() {
-      return this.count > (this.pageIdx + 1) * this.pageSize;
+      return this.$store.getters.hasNextPage
     },
     hasPrevPage() {
-      return this.pageIdx > 0;
+      return this.$store.getters.hasPrevPage
     }
   },
   components: { ResTable }
