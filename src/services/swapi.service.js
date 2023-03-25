@@ -73,6 +73,7 @@ function _makeIds(entities) {
 
 export const swapiService = {
     getSwDataBySearch,
+    loadSwCategoryData,
     getCategories,
     getNextPage,
 }

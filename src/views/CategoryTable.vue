@@ -16,12 +16,9 @@
     </v-col>
     <RouterLink to="/">Back to home page</RouterLink>
   </v-row>
-  <!-- <ResTable ></ResTable> -->
 </template>
 
 <script>
-import ResTable from "@/components/Table.vue";
-
 export default {
   async created() {
     const filterByParam = this.$route.params.filterBy;
@@ -56,6 +53,5 @@ export default {
       return this.$store.getters.hasPrevPage;
     }
   },
-  components: { ResTable }
 };
 </script>

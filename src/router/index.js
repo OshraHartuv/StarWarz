@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
 import Home from '@/views/Home.vue'
-import List from '@/views/List.vue'
+import CategoryTable from '@/views/CategoryTable.vue'
+import CategoryEdit from '@/views/CategoryEdit.vue'
 
 import { swapiService } from '@/services/swapi.service.js'
 
@@ -15,13 +16,18 @@ const router = createRouter({
         },
         {
             path: '/:category/:filterBy',
-            name: 'List',
-            component: List,
+            name: 'CategoryTable',
+            component: CategoryTable,
             beforeEnter: (to, from, next) => {
                 const category = to.params.category
                 const categories = swapiService.getCategories()
                 categories.includes(category) ? next() : next({ name: 'Home' })
             },
+        },
+        {
+            path: '/edit/:id',
+            name: 'CategoryEdit',
+            component: CategoryEdit,
         },
     ],
 })
