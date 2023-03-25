@@ -3,28 +3,25 @@ import axios from 'axios'
 const SWAPI_URL = 'https://swapi.dev/api/'
 var gStarWarData = {}
 const STORAGE_KEY = 'SW-'
-const categories = [
-    // 'planets',
-    // 'starships',
-    // 'vehicles',
-    'people',
-    // 'films',
-    // 'species',
-]
+const gCategories = ['planets', 'starships', 'vehicles', 'people', 'films', 'species']
 
 async function loadCategoryData(category, searchTerm) {
     // const storageKey = STORAGE_KEY + searchTerm;
     const storageKey = 'data'
-    try {
-        const res = await axios.get(SWAPI_URL + category + '/', {
-            params: { search: searchTerm },
-        })
-        gStarWarData[category] = res.data
-    } catch (err) {
-        console.log('err ', err)
+    let starWarData = _loadFromStorage(storageKey) || {}
+    if (!starWarData[category]) {
+        try {
+            const res = await axios.get(SWAPI_URL + category + '/', {
+                params: { search: searchTerm },
+            })
+            starWarData[category] = res.data
+        } catch (err) {
+            console.log('err ', err)
+        }
     }
+    gStarWarData = starWarData
     _saveToStorage(storageKey)
-    return JSON.parse(JSON.stringify(gStarWarData))
+    return JSON.parse(JSON.stringify(starWarData))
 }
 
 async function getSearchData(searchTerm) {
@@ -34,7 +31,7 @@ async function getSearchData(searchTerm) {
     if (!starWarData) {
         console.log('axiosing.............')
         try {
-            const prms = categories.map((category) =>
+            const prms = gCategories.map((category) =>
                 axios.get(SWAPI_URL + category + '/', {
                     params: { search: searchTerm },
                 })
@@ -89,8 +86,13 @@ function _loadFromStorage(key) {
     return JSON.parse(localStorage.getItem(key))
 }
 
+function getCategoryNames() {
+    return [...gCategories]
+}
+
 export const service = {
     getSearchData,
     getNextPage,
-    loadCategoryData
+    loadCategoryData,
+    getCategoryNames,
 }

@@ -25,17 +25,16 @@ const store = createStore({
         category(state) {
             return state.category
         },
-        categoryCount(state) {
-            if (!state.swData || !state.category || !state.swData[state.category]) return
-            return state.swData[state.category].count
+        categoryCount({ swData, category }) {
+            if (!swData || !category || !swData[category]) return
+            return swData[category].count
         },
         categoryRes({ swData, category, pageIdx, pageSize }) {
-            console.log('swData ', swData)
             if (!swData || !category || !swData[category]) return
             const categoryData = swData[category]
-            const totalCount = categoryData.count
-            const pageEndIdx = totalCount >= (pageIdx + 1) * pageSize ? (pageIdx + 1) * pageSize : totalCount
-            return categoryData.results.slice(pageIdx * pageSize, pageEndIdx)
+            const { count, results } = categoryData
+            const pageEndIdx = count >= (pageIdx + 1) * pageSize ? (pageIdx + 1) * pageSize : count
+            return results.slice(pageIdx * pageSize, pageEndIdx)
         },
     },
     mutations: {
@@ -72,13 +71,13 @@ const store = createStore({
             await dispatch({ type: 'loadResults' })
         },
         async setPage({ commit, dispatch }, { diff }) {
-            console.log('setting page');
+            console.log('setting page')
             if (diff > 0) await dispatch({ type: 'loadNextPage', diff })
             else commit({ type: 'setPage', diff })
         },
         async loadNextPage({ commit, state }, { diff }) {
-            console.log('loading next page');
-            
+            console.log('loading next page')
+
             const { swData, category, filterBy, pageIdx, pageSize } = state
             const currData = JSON.parse(JSON.stringify(swData[category]))
             const { count, results } = currData
