@@ -20,7 +20,11 @@ export default {
   watch: {
     categoryParam: {
       async handler(category) {
-       await this.$store.dispatch({ type: "setCategory", category });
+        try {
+          await this.$store.dispatch({ type: "setCategory", category });
+        } catch (err) {
+          console.log("err ", err);
+        }
       },
       deep: true,
       immediate: true

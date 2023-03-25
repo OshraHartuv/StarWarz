@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { utilService } from './util-service.js'
 
 const SWAPI_URL = 'https://swapi.dev/api/'
 var gStarWarData = {}
@@ -14,7 +15,9 @@ async function loadCategoryData(category, searchTerm) {
             const res = await axios.get(SWAPI_URL + category + '/', {
                 params: { search: searchTerm },
             })
-            starWarData[category] = res.data
+            const { data } = res
+            _makeId(data.results)
+            starWarData[category] = data
         } catch (err) {
             console.log('err ', err)
         }
@@ -37,10 +40,10 @@ async function getSearchData(searchTerm) {
                 })
             )
             const values = await Promise.all(prms)
-            starWarData = values.reduce((categoriesMap, { data, config: { url } }) => {
-                const categoryData = data
+            starWarData = values.reduce((categoriesMap, { categoryData: data, config: { url } }) => {
+                _makeId(data.results)
                 const categoryName = _getCategoryName(url)
-                categoriesMap[categoryName] = categoryData
+                categoriesMap[categoryName] = data
                 return categoriesMap
             }, {})
             gStarWarData = starWarData
@@ -60,9 +63,9 @@ async function getNextPage(currData, category, filterBy) {
     try {
         const res = await axios.get(currData.next)
         const { data } = res
-        console.log('res ', data)
         currData.next = data.next
-        if (data.results.length) currData.results.push(...data.results)
+        _makeId(data.results)
+        currData.results.push(...data.results)
         gStarWarData[category] = currData
         _saveToStorage(storageKey)
         return JSON.parse(JSON.stringify(gStarWarData[category]))
@@ -84,6 +87,10 @@ function _saveToStorage(key) {
 
 function _loadFromStorage(key) {
     return JSON.parse(localStorage.getItem(key))
+}
+
+function _makeId(entities) {
+    if (entities && entities.length) entities.forEach((entity) => (entity.id = utilService.makeId()))
 }
 
 function getCategoryNames() {
