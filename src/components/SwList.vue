@@ -10,7 +10,7 @@
     <v-col v-else v-for="(categoryResults, category) in swData" :key="category" cols="12">
       <div v-if="categoryResults && categoryResults.length">
         <v-list>
-          <v-list-header>{{ category }}</v-list-header>
+          <v-list-item-title>{{ category }}</v-list-item-title>
           <div v-for="result in categoryResults" :key="result">
             <v-list-item>
               <v-list-item-title>{{result.name}}</v-list-item-title>

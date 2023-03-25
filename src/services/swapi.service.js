@@ -1,5 +1,6 @@
 import axios from 'axios'
-import { utilService } from './util-service.js'
+import { utilService } from './util.service.js'
+import { storageService } from './storage.service.js'
 
 const SWAPI_BASE_URL = 'https://swapi.dev/api/'
 const CATEGORIES = ['vehicles', 'people']
@@ -21,6 +22,10 @@ async function getSwDataBySearch(searchTerm) {
     }
 }
 
+async function loadSwCategoryData(category, searchTerm) {
+    return storageService.loadSwCategoryDataFromCache(category, searchTerm) || (await _loadSwCategoryDataFromApi(category, searchTerm))
+}
+
 async function getNextPage(category, searchTerm) {
     try {
         const currSwCategoryData = await loadSwCategoryData(category, searchTerm)
@@ -29,7 +34,7 @@ async function getNextPage(category, searchTerm) {
         _makeIds(data.results)
         currSwCategoryData.next = data.next
         currSwCategoryData.results.push(...data.results)
-        _saveDataToCache(category, searchTerm, currSwCategoryData)
+        storageService.saveSwCategoryDataToCache(category, searchTerm, currSwCategoryData)
         return currSwCategoryData
     } catch (err) {
         console.error(`Error while getting next page => ${err.message}`)
@@ -37,21 +42,8 @@ async function getNextPage(category, searchTerm) {
     }
 }
 
-
 function getCategories() {
     return [...CATEGORIES]
-}
-
-async function loadSwCategoryData(category, searchTerm) {
-    return _loadSwCategoryDataFromCache(category, searchTerm) || (await _loadSwCategoryDataFromApi(category, searchTerm))
-}
-
-function _loadSwCategoryDataFromCache(category, searchTerm) {
-    console.log('Getting data from cache')
-    let cachedData = localStorage.getItem(category)
-    if (!cachedData) return null
-    cachedData = JSON.parse(cachedData)
-    return cachedData[searchTerm] ? cachedData[searchTerm] : null
 }
 
 async function _loadSwCategoryDataFromApi(category, searchTerm) {
@@ -61,18 +53,12 @@ async function _loadSwCategoryDataFromApi(category, searchTerm) {
         const { data, config } = response
         _makeIds(data.results)
         const formattedData = { ...data, url: config.url }
-        _saveDataToCache(category, searchTerm, formattedData)
+        storageService.saveSwCategoryDataToCache(category, searchTerm, formattedData)
         return formattedData
     } catch (err) {
         console.error(`Error while loading data from api => ${err.message}`)
         throw err
     }
-}
-
-function _saveDataToCache(category, searchTerm, data) {
-    let categoryCache = JSON.parse(localStorage.getItem(category) || '{}')
-    categoryCache[searchTerm] = data
-    localStorage.setItem(category, JSON.stringify(categoryCache))
 }
 
 function _getCategoryName(configUrl) {
@@ -89,5 +75,4 @@ export const swapiService = {
     getSwDataBySearch,
     getCategories,
     getNextPage,
-    loadSwCategoryData,
 }

@@ -1,5 +1,4 @@
 import { createStore, createLogger } from 'vuex'
-import { service } from '@/services/service.js'
 import { swapiService } from '@/services/swapi.service.js'
 import peopleModule from './modules/people.module'
 
