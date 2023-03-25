@@ -9,6 +9,7 @@
       ></v-text-field>
       <div class="place-holder" style="position: relative; margin: 0 auto; "></div>
       <v-menu
+      
         v-model="showMenu"
         attach=".place-holder"
         location="top"
@@ -17,7 +18,7 @@
         :persistent="true"
         min-height="100%"
       >
-        <List v-if="swData" :swData="swData" :filterBy="getFilterBy"></List>
+        <SwList v-if="swData" :swData="swData" :filterBy="getFilterBy"></SwList>
       </v-menu>
     </v-responsive>
     <!-- <List v-if="swData" :swData="swData" :filterBy="getFilterBy"></List> -->
@@ -25,8 +26,8 @@
 </template>
 
 <script>
-import { utilService } from "@/services/util-service.js";
-import List from "@/components/SearchRes.vue";
+import { utilService } from "@/services/util.service.js";
+import SwList from "@/components/SwList.vue";
 
 export default {
   data() {
@@ -73,6 +74,6 @@ export default {
       return this.$store.getters.filterBy;
     }
   },
-  components: { List }
+  components: { SwList }
 };
 </script>
