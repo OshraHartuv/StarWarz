@@ -12,7 +12,7 @@ const router = createRouter({
             component: Home,
         },
         {
-            path: '/list',
+            path: '/:category/:filterBy',
             name: 'List',
             component: List,
         },

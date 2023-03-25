@@ -1,50 +1,77 @@
 <template>
-       <v-row>
-          <v-col
-            v-for="card in cards"
-            :key="card"
-            cols="12"
-          >
-            <v-card>
-
-              <v-list lines="two">
-                <v-list-subheader>{{ card }}</v-list-subheader>
-                <div v-for="n in 6" :key="n">
-                  <v-list-item>
-                    <template v-slot:prepend>
-                      <v-avatar color="grey-darken-1"></v-avatar>
-                    </template>
-
-                    <v-list-item-title>Message {{ n }}</v-list-item-title>
-
-                    <v-list-item-subtitle>
-                      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Nihil repellendus distinctio similique
-                    </v-list-item-subtitle>
-                  </v-list-item>
-
-                  <v-divider
-                    v-if="n !== 6"
-                    :key="`divider-${n}`"
-                    inset
-                  ></v-divider>
-                </div>
-              </v-list>
-            </v-card>
-          </v-col>
-        </v-row>
+  <v-row>
+    <v-col v-for="result in results" :key="result" cols="12">
+      <v-card>
+        <v-list>
+          <v-list-subheader>{{ result.name }}</v-list-subheader>
+        </v-list>
+      </v-card>
+    </v-col>
+    <button v-if="hasPrevPage" @click="getPage(-1)">Prev</button>
+    <button v-if="hasNextPage" @click="getPage(1)">Next</button>
+  </v-row>
+  <!-- <ResTable ></ResTable> -->
 </template>
 
 <script>
-  export default {
-    data: () => ({
-      cards: ['Today', 'Yesterday'],
-      drawer: null,
-      links: [
-        ['mdi-inbox-arrow-down', 'Inbox'],
-        ['mdi-send', 'Send'],
-        ['mdi-delete', 'Trash'],
-        ['mdi-alert-octagon', 'Spam'],
-      ],
-    }),
-  }
+import ResTable from "@/components/Table.vue";
+
+export default {
+  watch: {
+    categoryParam: {
+      async handler(category) {
+       await this.$store.dispatch({ type: "setCategory", category });
+      },
+      deep: true,
+      immediate: true
+    },
+    filterByParam: {
+      async handler(filterBy) {
+        if (this.filterBy && this.filterBy === filterBy) return;
+        try {
+          await this.$store.dispatch({ type: "setFilter", filterBy });
+        } catch (err) {
+          console.log("err ", err);
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
+  methods: {
+    async getPage(diff) {
+      await this.$store.dispatch({ type: "setPage", diff });
+    }
+  },
+  computed: {
+    categoryParam() {
+      return this.$route.params.category;
+    },
+    filterByParam() {
+      return this.$route.params.filterBy;
+    },
+    results() {
+      return this.$store.getters.categoryRes;
+    },
+    count() {
+      return this.$store.getters.categoryCount;
+    },
+    filterBy() {
+      return this.$store.getters.filterBy;
+    },
+    pageIdx() {
+      return this.$store.state.pageIdx;
+    },
+    pageSize() {
+      return this.$store.state.pageSize;
+    },
+    hasNextPage() {
+      return this.count > (this.pageIdx + 1) * this.pageSize;
+    },
+    hasPrevPage() {
+      return this.pageIdx > 0;
+    }
+  },
+  components: { ResTable }
+};
 </script>
