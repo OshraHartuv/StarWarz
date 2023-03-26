@@ -1,12 +1,13 @@
 <template>
   <div>
-    <v-row v-if="results && results.length">
-      <v-col v-for="result in results" :key="result" cols="12">
+    <v-row v-if="entities && entities.length">
+      <v-col v-for="entity in entities" :key="entity" cols="12">
         <v-list>
-          <v-list-subheader>{{ result.name }}</v-list-subheader>
+          <v-list-subheader>{{ entity.name }}</v-list-subheader>
           <v-list-subheader
-            @click="$router.push({ name: 'CategoryEdit', params: { category: $route.params.category, filterBy: $route.params.filterBy, id: result.id } })"
+            @click="$router.push({ name: 'CategoryEdit', params: { category: $route.params.category, filterBy: $route.params.filterBy, id: entity.id } })"
           >Edit</v-list-subheader>
+          <button @click="remove(entity.id)">Delete</button>
         </v-list>
       </v-col>
       <button v-if="hasPrevPage" @click="getPage(-1)">Previous</button>
@@ -44,10 +45,16 @@ export default {
         console.error(`Error while setting page => ${err.message}`);
         // Notification
       }
+    },
+    async remove(id) {
+      await this.$store.dispatch({
+        type: "removeEntity",
+        id
+      });
     }
   },
   computed: {
-    results() {
+    entities() {
       return this.$store.getters.categoryRes;
     },
     filterBy() {

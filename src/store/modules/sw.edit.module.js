@@ -13,11 +13,7 @@ export default {
         setEditEntity(state, { editEntity }) {
             state.editEntity = editEntity
         },
-        saveEntity(state, { entity, categoryResults }) {
-            console.log('categoryData ', categoryResults)
-            const entityIdx = categoryResults.findIndex(e=> e.id === entity.id) 
-            if (entityIdx !== -1) categoryResults.splice(entityIdx,1,entity)
-        },
+     
     },
     actions: {
         loadSwEntityById({ getters, commit }, { id }) {
@@ -28,16 +24,25 @@ export default {
         async saveEntity({ getters, commit }, { entityToSave }) {
             try {
                 const { category, filterBy, categoryData } = getters
-                console.log('category ', category)
-                console.log('categoryData ', categoryData)
                 if (!category || !categoryData) return
-                const savedEntity = await swEditService.saveSwEntity(entityToSave, category, filterBy)
-                if (!savedEntity) return 
-                commit({ type: 'saveEntity', entity: savedEntity, categoryResults:  categoryData.results})
+                await swEditService.saveSwEntity(entityToSave, category, filterBy)
+                commit({ type: 'saveEntity', entity: savedEntity})
                 commit({ type: 'setEditEntity', editEntity: savedEntity })
             } catch (err) {
-                console.error(`Error while saving entity in store => ${err.message}`)
+                console.error(`Error while saving entity (${entityToSave.id}) in store => ${err.message}`)
                 throw err
+            }
+        },
+        async removeEntity({ getters, commit }, { id }) {
+            try {
+                const { category, filterBy, categoryData } = getters
+                if (!category || !categoryData) return
+                await swEditService.removeSwEntity(id, category, filterBy)
+                commit({ type: 'removeEntity', entityId: id})
+                commit({ type: 'setEditEntity', editEntity: {} })
+            } catch (err) {
+              console.error(`Error while removing entity (${id}) in store => ${err.message}`);
+              throw err;
             }
         },
     },

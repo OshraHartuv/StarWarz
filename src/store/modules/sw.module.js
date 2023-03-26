@@ -22,8 +22,8 @@ export default {
         category(state) {
             return state.category
         },
-        categoryData({category, swData}) {
-            if (!swData || !category) return 
+        categoryData({ category, swData }) {
+            if (!swData || !category) return
             return swData[category]
         },
         categoryCount({ swData, category }) {
@@ -31,8 +31,8 @@ export default {
             return swData[category].count
         },
         categoryRes({ swData, category, pageIdx, pageSize }) {
-            console.log('swData ',swData);
-            console.log('category ',category);
+            console.log('swData ', swData)
+            console.log('category ', category)
             if (!swData || !category || !swData[category]) return
             const categoryData = swData[category]
             const { count, results } = categoryData
@@ -66,6 +66,16 @@ export default {
         },
         setPage(state, { diff }) {
             state.pageIdx += diff
+        },
+        saveEntity({ swData, category }, { entity }) {
+            const categoryResults = swData[category].results
+            const entityIdx = categoryResults.findIndex((e) => e.id === entity.id)
+            if (entityIdx !== -1) categoryResults.splice(entityIdx, 1, entity)
+        },
+        removeEntity({ swData, category }, { entityId }) {
+            const categoryResults = swData[category].results
+            const entityIdx = categoryResults.findIndex((e) => e.id === entityId)
+            if (entityIdx !== -1) categoryResults.splice(entityIdx, 1)
         },
     },
     actions: {
