@@ -23,11 +23,13 @@ const router = createRouter({
                 const categories = swapiService.getCategories()
                 categories.includes(category) ? next() : next({ name: 'Home' })
             },
-        },
-        {
-            path: '/edit/:id',
-            name: 'CategoryEdit',
-            component: CategoryEdit,
+            children: [
+                {
+                    path: 'edit/:id',
+                    name: 'CategoryEdit',
+                    component: CategoryEdit,
+                },
+            ],
         },
     ],
 })

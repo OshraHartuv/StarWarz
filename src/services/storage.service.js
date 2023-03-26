@@ -12,9 +12,6 @@ function saveSwCategoryDataToCache(category, searchTerm, data) {
     localStorage.setItem(category, JSON.stringify(categoryCache))
 }
 
-
-
-
 export const storageService = {
     loadSwCategoryDataFromCache,
     saveSwCategoryDataToCache

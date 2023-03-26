@@ -4,7 +4,7 @@ import { storageService } from './storage.service.js'
 
 const SWAPI_BASE_URL = 'https://swapi.dev/api/'
 const CATEGORIES = ['vehicles', 'people']
-// const CATEGORIES = ['planets', 'starships', 'vehicles', 'people', 'films', 'species']
+// const CATEGORIES = [ 'people','planets', 'starships', 'vehicles', 'films', 'species']
 
 async function getSwDataBySearch(searchTerm) {
     try {

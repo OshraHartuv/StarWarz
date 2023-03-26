@@ -1,12 +1,10 @@
 <template>
-  <div>
+  <section>
     <v-row v-if="results && results.length">
       <v-col v-for="result in results" :key="result" cols="12">
         <v-list>
           <v-list-subheader>{{ result.name }}</v-list-subheader>
-          <v-list-subheader
-            @click="$router.push({ name: 'CategoryEdit', params: { category: $route.params.category, filterBy: $route.params.filterBy, id: result.id } })"
-          >Edit</v-list-subheader>
+          <v-list-subheader>Edit</v-list-subheader>
         </v-list>
       </v-col>
       <button v-if="hasPrevPage" @click="getPage(-1)">Previous</button>
@@ -21,7 +19,7 @@
       <RouterLink to="/">Back to home page</RouterLink>
     </v-row>
     <RouterView />
-  </div>
+  </section>
 </template>
 
 <script>

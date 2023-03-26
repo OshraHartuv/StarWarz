@@ -16,11 +16,10 @@
               <v-list-item-title>{{result.name}}</v-list-item-title>
             </v-list-item>
           </div>
-         
-            <v-list-subheader
-              @click="$router.push(`/${category}/${filterBy}`)"
-            >View all {{ category }}</v-list-subheader>
-     
+
+          <v-list-subheader
+            @click="$router.push(`/${category}/${filterBy}`)"
+          >View all {{ category }}</v-list-subheader>
         </v-list>
       </div>
     </v-col>
