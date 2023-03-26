@@ -75,11 +75,10 @@ export default {
             if (entityIdx === -1) return
             results.splice(entityIdx, 1)
             swData[category].count--
-            console.log('count @@@@@@@', swData[category].count)
         },
     },
     actions: {
-        async loadResults({ commit, dispatch, state }) {
+        async loadResults({ commit, state }) {
             try {
                 if (!state.filterBy) return commit({ type: 'setSwData', swData: {} })
                 const swData = await swapiService.getSwDataBySearch(state.filterBy)
@@ -94,7 +93,6 @@ export default {
             if (!state.category) await dispatch({ type: 'loadResults' })
         },
         async setPage({ commit, dispatch }, { diff }) {
-            console.log('setting page')
             if (diff > 0) await dispatch({ type: 'loadNextPage', diff })
             else commit({ type: 'setPage', diff })
         },
@@ -124,7 +122,8 @@ export default {
         async setCategory({ commit, state }, { category }) {
             const { swData, filterBy } = state
             commit({ type: 'setCategory', category })
-            if (!category || (swData && swData[category])) return
+            // Not setting a category means we want to clear our data
+            if (!category) {return commit({ type: 'setSwData', swData: {} })}
             try {
                 const newCategoryData = await swapiService.loadSwCategoryData(category, filterBy)
                 const swDataCopy = JSON.parse(JSON.stringify(swData)) || {}

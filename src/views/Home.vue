@@ -27,10 +27,9 @@ export default {
       filterBy: "",
     };
   },
-
   async created() {
     this.debouncedSetFilterBy = utilService.debounce(this.setFilterBy, 200);
-    this.$store.commit({ type: "setCategory", category: "" });
+    await this.$store.dispatch({ type: "setCategory", category: "" });
   },
   methods: {
     setFilterBy() {
