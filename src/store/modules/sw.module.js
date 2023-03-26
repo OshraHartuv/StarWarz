@@ -30,21 +30,18 @@ export default {
             if (!swData || !category || !swData[category]) return
             return swData[category].count
         },
-        categoryRes({ swData, category, pageIdx, pageSize }) {
-            console.log('swData ', swData)
-            console.log('category ', category)
-            if (!swData || !category || !swData[category]) return
-            const categoryData = swData[category]
-            const { count, results } = categoryData
-            if (!results || !count) return
-            const pageEndIdx = count >= (pageIdx + 1) * pageSize ? (pageIdx + 1) * pageSize : count
-            return results.slice(pageIdx * pageSize, pageEndIdx)
+        categoryEntitiesPerPage({ pageIdx, pageSize }, { pageEndIdx, categoryData }) {
+            if (!categoryData) return
+            const entities = categoryData.results
+            if (!entities) returns
+            return entities.slice(pageIdx * pageSize, pageEndIdx)
         },
-        hasNextPage({ swData, pageIdx, pageSize, category }) {
-            if (!swData || !category || !swData[category]) return
-
-            const { count } = swData[category]
-            return count > (pageIdx + 1) * pageSize
+        pageEndIdx({ pageIdx, pageSize, categoryCount }) {
+            const endIdx = (pageIdx + 1) * pageSize
+            return endIdx > categoryCount ? categoryCount : endIdx
+        },
+        hasNextPage({ pageIdx, pageSize }, { categoryCount }) {
+            return categoryCount > (pageIdx + 1) * pageSize
         },
         hasPrevPage({ pageIdx }) {
             return pageIdx > 0
@@ -73,9 +70,12 @@ export default {
             if (entityIdx !== -1) categoryResults.splice(entityIdx, 1, entity)
         },
         removeEntity({ swData, category }, { entityId }) {
-            const categoryResults = swData[category].results
-            const entityIdx = categoryResults.findIndex((e) => e.id === entityId)
-            if (entityIdx !== -1) categoryResults.splice(entityIdx, 1)
+            const { results } = swData[category]
+            const entityIdx = results.findIndex((e) => e.id === entityId)
+            if (entityIdx === -1) return
+            results.splice(entityIdx, 1)
+            swData[category].count--
+            console.log('count @@@@@@@', swData[category].count)
         },
     },
     actions: {
@@ -98,21 +98,21 @@ export default {
             if (diff > 0) await dispatch({ type: 'loadNextPage', diff })
             else commit({ type: 'setPage', diff })
         },
-        async loadNextPage({ commit, state }, { diff }) {
-            console.log('loading next page')
+        async loadNextPage({ commit, state, getters }, { diff }) {
+            const { category, filterBy, pageIdx, pageSize } = state
+            const {
+                categoryData: { count, results },
+            } = getters
 
-            const { swData, category, filterBy, pageIdx, pageSize } = state
-            const currData = JSON.parse(JSON.stringify(swData[category]))
-            const { count, results } = currData
-
+            // Checking the index of the entity that will end the next page
             const pageEndIdx = count >= (pageIdx + 2) * pageSize ? (pageIdx + 2) * pageSize : count
 
-            // No need in fetching - already in vuex
+            // No need in fetching - entity already in vuex
             if (results.length >= pageEndIdx) return commit({ type: 'setPage', diff })
 
             // Fetching
-            console.log('going to swapi')
             try {
+                console.log('going to swapi')
                 const newCategoryData = await swapiService.getNextPage(category, filterBy)
                 commit({ type: 'setPage', diff })
                 commit({ type: 'setCategoryData', categoryData: newCategoryData })

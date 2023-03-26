@@ -1,27 +1,19 @@
 <template>
-  <section style="height: 100%">
-    <v-responsive class="mx-auto" max-width="444" height="100%">
-      <v-text-field
-        label="search"
-        variant="underlined"
-        v-model="filterBy"
-        @input="debouncedSetFilterBy"
-      ></v-text-field>
-      <div class="place-holder" style="position: relative; margin: 0 auto; "></div>
-      <v-menu
-      
-        v-model="showMenu"
-        attach=".place-holder"
-        location="top"
-        min-width="100%"
-        :close-on-content-click="false"
-        :persistent="true"
-        min-height="100%"
-      >
-        <SwList v-if="swData" :swData="swData" :filterBy="getFilterBy"></SwList>
+  <section>
+    <div class="text-center">
+      <v-menu >
+        <template v-slot:activator="{ props }" transition="scale-transition">
+          <v-text-field
+            label="search"
+            variant="underlined"
+            v-model="filterBy"
+            @input="debouncedSetFilterBy"
+            v-bind="props"
+          ></v-text-field>
+        </template>
+        <SwList :swData="swData" :filterBy="getFilterBy"></SwList>
       </v-menu>
-    </v-responsive>
-    <!-- <List v-if="swData" :swData="swData" :filterBy="getFilterBy"></List> -->
+    </div>
   </section>
 </template>
 
@@ -33,25 +25,6 @@ export default {
   data() {
     return {
       filterBy: "",
-      showMenu: false,
-      items: [
-        {
-          title: "Foo",
-          value: "foo"
-        },
-        {
-          title: "Bar",
-          value: "bar"
-        },
-        {
-          title: "Fizz",
-          value: "fizz"
-        },
-        {
-          title: "Buzz",
-          value: "buzz"
-        }
-      ]
     };
   },
 
@@ -61,9 +34,8 @@ export default {
   },
   methods: {
     setFilterBy() {
-      this.showMenu = this.filterBy ? true : false;
       this.$store.dispatch({ type: "setFilter", filterBy: this.filterBy });
-    }
+    },
   },
   computed: {
     swData() {

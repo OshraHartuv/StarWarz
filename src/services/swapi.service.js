@@ -29,6 +29,7 @@ async function loadSwCategoryData(category, searchTerm) {
 async function getNextPage(category, searchTerm) {
     try {
         const currSwCategoryData = await loadSwCategoryData(category, searchTerm)
+        if (!currSwCategoryData.next) throw new Error('No next page in swapi')
         const newSwCategoryData = await axios.get(currSwCategoryData.next)
         const { data } = newSwCategoryData
         _makeIds(data.results)

@@ -46,7 +46,7 @@ export default {
   },
   computed: {
     results() {
-      return this.$store.getters.categoryRes;
+      return this.$store.getters.categoryEntitiesPerPage;
     },
     filterBy() {
       return this.$store.getters.filterBy;

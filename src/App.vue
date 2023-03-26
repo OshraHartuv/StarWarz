@@ -3,7 +3,7 @@
     <v-layout>
       <v-app-bar title="StarWars"></v-app-bar>
       <v-main>
-        <v-container fluid style="height: 100%">
+        <v-container >
           <RouterView />
         </v-container>
       </v-main>
