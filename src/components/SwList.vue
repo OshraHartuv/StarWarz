@@ -1,31 +1,19 @@
 <template>
   <v-list v-show="!allDataIsEmpty" transition="scale-transition">
     <v-list-item>
-      <v-row>
-        <v-col v-if="allCategoriesAreEmpty">
-          <v-card>
-            <v-list>
-              <v-list-subheader>No matching results</v-list-subheader>
-            </v-list>
-          </v-card>
-        </v-col>
-        <v-col v-else v-for="(categoryResults, category) in swData" :key="category" cols="12">
-          <div v-if="categoryResults && categoryResults.length">
-            <v-list>
-              <v-list-item-title>{{ category }}</v-list-item-title>
-              <div v-for="result in categoryResults" :key="result">
-                <v-list-item>
-                  <v-list-item-title>{{result.name}}</v-list-item-title>
-                </v-list-item>
-              </div>
+      <v-list-subheader v-if="allCategoriesAreEmpty">No matching results</v-list-subheader>
 
-              <v-list-subheader
-                @click="$router.push(`/${category}/${filterBy}`)"
-              >View all {{ category }}</v-list-subheader>
-            </v-list>
-          </div>
-        </v-col>
-      </v-row>
+      <div v-else v-for="(categoryResults, category) in swData" :key="category" cols="12">
+        <v-list v-if="categoryResults && categoryResults.length">
+          <v-list-item-title>{{ category }}</v-list-item-title>
+          <v-list-item
+            @click="$router.push(`/${category}/${filterBy}`)"
+            v-for="result in categoryResults"
+            :key="result"
+          >{{result.name}}</v-list-item>
+          <v-list-item @click="$router.push(`/${category}/${filterBy}`)">View all {{ category }}</v-list-item>
+        </v-list>
+      </div>
     </v-list-item>
   </v-list>
 </template>
@@ -52,7 +40,7 @@ export default {
     },
     allDataIsEmpty() {
       const searchResults = Object.values(this.swData);
-      console.log('searchResults ',searchResults);
+      console.log("searchResults ", searchResults);
       return !searchResults.length;
     }
   }
