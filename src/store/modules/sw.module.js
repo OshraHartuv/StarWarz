@@ -31,8 +31,10 @@ export default {
             return swData[category].count
         },
         categoryRes({ swData, category, pageIdx, pageSize }) {
+            console.log('swData ',swData);
+            console.log('category ',category);
             if (!swData || !category || !swData[category]) return
-            const categoryData = JSON.parse(JSON.stringify(swData[category]))
+            const categoryData = swData[category]
             const { count, results } = categoryData
             if (!results || !count) return
             const pageEndIdx = count >= (pageIdx + 1) * pageSize ? (pageIdx + 1) * pageSize : count
@@ -50,7 +52,6 @@ export default {
     },
     mutations: {
         setSwData(state, { swData }) {
-            console.log('swData ',swData);
             state.swData = swData
         },
         setFilter(state, { filterBy }) {

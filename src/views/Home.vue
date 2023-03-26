@@ -62,7 +62,6 @@ export default {
   methods: {
     setFilterBy() {
       this.showMenu = this.filterBy ? true : false;
-      console.log("this.showMenu ", this.showMenu);
       this.$store.dispatch({ type: "setFilter", filterBy: this.filterBy });
     }
   },
