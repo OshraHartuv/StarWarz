@@ -1,19 +1,22 @@
 <template>
   <div v-if="entities && entities.length">
-    <v-data-table
+    <v-data-table-server
       :headers="headers"
       hide-default-footer
       :items="entities"
+      :loading="loading"
       item-value="name"
       class="elevation-1"
-      @update="getUpdate"
+      @click:row="onRowClick"
     >
+      <!-- @update:options="getUpdate" -->
       <template v-slot:bottom>
         <div class="text-center pt-2">
           <!-- <v-pagination v-model="page" :length="options.pageCount"></v-pagination> -->
         </div>
       </template>
-    </v-data-table>
+    </v-data-table-server>
+    <RouterView/>
   </div>
 </template>
 
@@ -26,29 +29,42 @@ export default {
       options: {
         pageCount: 1
       },
+      loading: true,
       page: 1
     };
   },
   async created() {
+    this.loading = true;
     const filterByParam = this.$route.params.filterBy;
     const categoryByParam = this.$route.params.category;
     if (filterByParam !== this.filterBy)
       this.$store.commit({ type: "setFilter", filterBy: filterByParam });
-    await this.$store.dispatch({
-      type: "setCategory",
-      category: categoryByParam
-    });
+    try {
+      await this.$store.dispatch({
+        type: "setCategory",
+        category: categoryByParam
+      });
+    } catch (err) {
+      console.error(`Error while setting category => ${err.message}`);
+      // Notification
+    } finally {
+      this.loading = false;
+    }
   },
   methods: {
     async getPage(diff) {
+      this.loading = true;
       try {
         await this.$store.dispatch({ type: "setPage", diff });
       } catch (err) {
         console.error(`Error while setting page => ${err.message}`);
         // Notification
+      } finally {
+        this.loading = false;
       }
     },
     async remove(id) {
+      this.loading = true;
       try {
         await this.$store.dispatch({
           type: "removeEntity",
@@ -57,7 +73,14 @@ export default {
       } catch (err) {
         console.error(`Error while removing entity => ${err.message}`);
         //Notification
+      } finally {
+        this.loading = false;
       }
+    },
+    onRowClick(ev, {item}) {
+      if (!item) return;
+      const id = item.raw.id;
+      this.$router.push({ name: 'CategoryEdit', params: { category: this.$route.params.category, filterBy: this.$route.params.filterBy, id } })
     }
   },
   computed: {
@@ -71,7 +94,7 @@ export default {
           return {
             title: utilService.formatString(key),
             align: idx ? "end" : "start",
-            sortable: false,
+            sortable: true,
             key: key
           };
         });

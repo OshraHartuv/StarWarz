@@ -25,7 +25,7 @@ export default {
             try {
                 const { category, filterBy, categoryData } = getters
                 if (!category || !categoryData) return
-                await swEditService.saveSwEntity(entityToSave, category, filterBy)
+                const savedEntity =await swEditService.saveSwEntity(entityToSave, category, filterBy)
                 commit({ type: 'saveEntity', entity: savedEntity})
                 commit({ type: 'setEditEntity', editEntity: savedEntity })
             } catch (err) {

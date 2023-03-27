@@ -9,6 +9,7 @@ async function saveSwEntity(entityToSave, category, searchTerm) {
         if (entityIdx === -1) throw new Error('Can\'t find entity')
         allCategoryData.results.splice(entityIdx, 1, entityToSave)
         storageService.saveSwCategoryDataToCache(category, searchTerm, allCategoryData)
+        return entityToSave
     } catch (err) {
         console.error(`Error while saving entity in service => ${err.message}`)
         throw err

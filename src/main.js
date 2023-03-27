@@ -9,13 +9,13 @@ import { createVuetify } from 'vuetify';
 
 import { aliases, fa } from 'vuetify/iconsets/fa4'
 import { mdi } from 'vuetify/iconsets/mdi'
-import { VDataTable } from 'vuetify/labs/VDataTable'
-
+// import { VDataTable } from 'vuetify/labs/VDataTable'
+import * as labs from 'vuetify/labs/components'
 import * as components from 'vuetify/components';
 import * as directives from 'vuetify/directives';
 
 const vuetify = createVuetify({
-    components:{...components, VDataTable},
+    components:{...components, ...labs},
     directives,
     ssr: true,
     icons: {
