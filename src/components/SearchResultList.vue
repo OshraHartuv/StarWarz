@@ -1,5 +1,5 @@
 <template>
-  <v-list v-show="!isCategoriesDataEmpty" transition="scale-transition">
+  <v-list v-show="!isCategoriesDataEmpty" transition="scale-transition" max-height="70vh">
     <v-list-item>
       <v-list-subheader v-if="isCategoryDataEmpty">No matching results</v-list-subheader>
       <div v-else v-for="(categoryResults, category) in swData" :key="category" cols="12">

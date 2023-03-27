@@ -65,7 +65,7 @@ function _formatCategoryEntities(category, entities) {
         case 'people':
             return entities.map(({ name, gender, birth_year, height, mass }) => ({ name, gender, birthYear: birth_year, height, mass, id: utilService.makeId() }))
         case 'films':
-            return entities.map(({ title, director, producer, opening_crawl }) => ({ title, director, producer, openingCrawl: opening_crawl, id: utilService.makeId() }))
+            return entities.map(({ title, director, producer, opening_crawl }) => ({ name:title, director, producer, openingCrawl: opening_crawl, id: utilService.makeId() }))
         case 'starships':
             return entities.map(({ name, model, starship_class, manufacturer }) => ({ name, model, starshipClass: starship_class, manufacturer, id: utilService.makeId() }))
         case 'vehicles':
