@@ -1,32 +1,111 @@
 <template>
-  <div>
-    <v-row v-if="entities && entities.length">
-      <v-col v-for="entity in entities" :key="entity" cols="12">
-        <v-list>
-          <v-list-subheader>{{ entity.name }}</v-list-subheader>
-          <v-list-subheader
-            @click="$router.push({ name: 'CategoryEdit', params: { category: $route.params.category, filterBy: $route.params.filterBy, id: entity.id } })"
-          >Edit</v-list-subheader>
-          <button @click="remove(entity.id)">Delete</button>
-        </v-list>
-      </v-col>
-      <button v-if="hasPrevPage" @click="getPage(-1)">Previous</button>
-      <button v-if="hasNextPage" @click="getPage(1)">Next</button>
-    </v-row>
-    <v-row v-else>
-      <v-col>
-        <v-list>
-          <v-list-subheader>No matching results</v-list-subheader>
-        </v-list>
-      </v-col>
-      <RouterLink to="/">Back to home page</RouterLink>
-    </v-row>
-    <RouterView />
-  </div>
+  <v-data-table :headers="headers" :items="desserts" item-value="name" class="elevation-1"></v-data-table>
 </template>
 
 <script>
+import { utilService } from "@/services/util.service.js";
+
 export default {
+  data() {
+    return {
+      itemsPerPage: 5,
+      // headers: [
+      //   {
+      //     title: "Dessert (100g serving)",
+      //     align: "start",
+      //     sortable: false,
+      //     key: "name"
+      //   },
+      //   { title: "Calories", align: "end", key: "calories" },
+      //   { title: "Fat (g)", align: "end", key: "fat" },
+      //   { title: "Carbs (g)", align: "end", key: "carbs" },
+      //   { title: "Protein (g)", align: "end", key: "protein" },
+      //   { title: "Iron (%)", align: "end", key: "iron" }
+      // ],
+      desserts: [
+        {
+          name: "Frozen Yogurt",
+          calories: 159,
+          fat: 6.0,
+          carbs: 24,
+          protein: 4.0,
+          iron: "1"
+        },
+        {
+          name: "Jelly bean",
+          calories: 375,
+          fat: 0.0,
+          carbs: 94,
+          protein: 0.0,
+          iron: "0"
+        },
+        {
+          name: "KitKat",
+          calories: 518,
+          fat: 26.0,
+          carbs: 65,
+          protein: 7,
+          iron: "6"
+        },
+        {
+          name: "Eclair",
+          calories: 262,
+          fat: 16.0,
+          carbs: 23,
+          protein: 6.0,
+          iron: "7"
+        },
+        {
+          name: "Gingerbread",
+          calories: 356,
+          fat: 16.0,
+          carbs: 49,
+          protein: 3.9,
+          iron: "16"
+        },
+        {
+          name: "Ice cream sandwich",
+          calories: 237,
+          fat: 9.0,
+          carbs: 37,
+          protein: 4.3,
+          iron: "1"
+        },
+        {
+          name: "Lollipop",
+          calories: 392,
+          fat: 0.2,
+          carbs: 98,
+          protein: 0,
+          iron: "2"
+        },
+        {
+          name: "Cupcake",
+          calories: 305,
+          fat: 3.7,
+          carbs: 67,
+          protein: 4.3,
+          iron: "8"
+        },
+        {
+          name: "Honeycomb",
+          calories: 408,
+          fat: 3.2,
+          carbs: 87,
+          protein: 6.5,
+          iron: "45"
+        },
+        {
+          name: "Donut",
+          calories: 452,
+          fat: 25.0,
+          carbs: 51,
+          protein: 4.9,
+          iron: "22"
+        }
+      ]
+    };
+  },
   async created() {
     const filterByParam = this.$route.params.filterBy;
     const categoryByParam = this.$route.params.category;
@@ -56,6 +135,19 @@ export default {
   computed: {
     entities() {
       return this.$store.getters.categoryEntitiesPerPage;
+    },
+    headers() {
+      if (!this.entities || !this.entities.length) return;
+      return Object.keys(this.entities[0])
+        .filter(key => key !== "id")
+        .map((key, idx) => {
+          return {
+            title: utilService.formatString(key),
+            align: idx ? "end" : "start",
+            sortable: false,
+            key: key
+          };
+        });
     },
     filterBy() {
       return this.$store.getters.filterBy;

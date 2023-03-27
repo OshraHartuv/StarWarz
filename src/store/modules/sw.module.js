@@ -33,7 +33,7 @@ export default {
         categoryEntitiesPerPage({ pageIdx, pageSize }, { pageEndIdx, categoryData }) {
             if (!categoryData) return
             const entities = categoryData.results
-            if (!entities) returns
+            if (!entities) return
             return entities.slice(pageIdx * pageSize, pageEndIdx)
         },
         pageEndIdx({ pageIdx, pageSize, categoryCount }) {
@@ -123,7 +123,9 @@ export default {
             const { swData, filterBy } = state
             commit({ type: 'setCategory', category })
             // Not setting a category means we want to clear our data
-            if (!category) {return commit({ type: 'setSwData', swData: {} })}
+            if (!category) {
+                return commit({ type: 'setSwData', swData: {} })
+            }
             try {
                 const newCategoryData = await swapiService.loadSwCategoryData(category, filterBy)
                 const swDataCopy = JSON.parse(JSON.stringify(swData)) || {}

@@ -1,7 +1,7 @@
 function loadSwCategoryDataFromCache(category, searchTerm) {
-    console.log('Getting data from cache')
     let cachedData = localStorage.getItem(category)
     if (!cachedData) return null
+    console.log('Getting data from cache')
     cachedData = JSON.parse(cachedData)
     return cachedData[searchTerm] ? cachedData[searchTerm] : null
 }

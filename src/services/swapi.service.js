@@ -32,9 +32,9 @@ async function getNextPage(category, searchTerm) {
         if (!currSwCategoryData.next) throw new Error('No next page in swapi')
         const newSwCategoryData = await axios.get(currSwCategoryData.next)
         const { data } = newSwCategoryData
-        _makeIds(data.results)
+        const formatCategoryEntities = _formatCategoryEntities(category, data.results)
         currSwCategoryData.next = data.next
-        currSwCategoryData.results.push(...data.results)
+        currSwCategoryData.results.push(...formatCategoryEntities)
         storageService.saveSwCategoryDataToCache(category, searchTerm, currSwCategoryData)
         return currSwCategoryData
     } catch (err) {
@@ -52,7 +52,7 @@ async function _loadSwCategoryDataFromApi(category, searchTerm) {
     try {
         const response = await axios.get(`${SWAPI_BASE_URL}${category}/?search=${searchTerm}`)
         const { data, config } = response
-        _makeIds(data.results)
+        data.results = _formatCategoryEntities(category, data.results)
         const formattedData = { ...data, url: config.url }
         storageService.saveSwCategoryDataToCache(category, searchTerm, formattedData)
         return formattedData
@@ -62,14 +62,27 @@ async function _loadSwCategoryDataFromApi(category, searchTerm) {
     }
 }
 
+function _formatCategoryEntities(category, entities) {
+    switch (category) {
+        case 'people':
+            return entities.map(({ name, gender, birth_year, height, mass }) => ({ name, gender, birthYear: birth_year, height, mass, id: utilService.makeId() }))
+        case 'films':
+            return entities.map(({ title, director, producer, opening_crawl }) => ({ title, director, producer, openingCrawl: opening_crawl, id: utilService.makeId() }))
+        case 'starships':
+            return entities.map(({ name, model, starship_class, manufacturer }) => ({ name, model, starshipClass: starship_class, manufacturer, id: utilService.makeId() }))
+        case 'vehicles':
+            return entities.map(({ name, model, vehicle_class, manufacturer }) => ({ name, model, vehicleClass: vehicle_class, manufacturer, id: utilService.makeId() }))
+        case 'species':
+            return entities.map(({ name, classification, designation, language, homeworld }) => ({ name, classification, designation, language, homeWorld: homeworld, id: utilService.makeId() }))
+        case 'planets':
+            return entities.map(({ name, diameter, population, climate }) => ({ name, diameter, population, climate, id: utilService.makeId() }))
+    }
+}
+
 function _getCategoryName(configUrl) {
     const url = new URL(configUrl)
     const pathname = url.pathname
     return pathname.split('/')[2]
-}
-
-function _makeIds(entities) {
-    if (entities && entities.length) entities.forEach((entity) => (entity.id = utilService.makeId()))
 }
 
 export const swapiService = {
