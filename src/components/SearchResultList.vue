@@ -10,7 +10,9 @@
             @click="goToCategoryPage(category)"
             v-for="result in categoryResults"
             :key="result"
-          >{{result.name}}</v-list-item>
+          >
+            <span v-html="highlightSearchTerm(result.name)"></span>
+          </v-list-item>
           <v-list-item
             class="text-right"
             @click="goToCategoryPage(category)"
@@ -40,20 +42,23 @@ export default {
   methods: {
     goToCategoryPage(category) {
       this.$router.push(`/${category}/${this.filterBy}`);
-    }
+    },
+    highlightSearchTerm(name) {
+        return name.replace(new RegExp(this.filterBy, 'gi'), '<span class="font-weight-bold">$&</span>');
+      }
   },
   computed: {},
   watch: {
     swData: {
       handler(swData) {
-        console.log('swData ',swData);
+        console.log("swData ", swData);
         const searchResults = Object.values(swData);
         this.isCategoriesDataEmpty = !searchResults.length ? true : false;
         this.isCategoryDataEmpty = searchResults.every(result => !result.length)
           ? true
           : false;
       },
-      immediate:true
+      immediate: true
     }
   }
 };

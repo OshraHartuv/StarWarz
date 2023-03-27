@@ -15,7 +15,7 @@
 
 <script>
 import { utilService } from "@/services/util.service.js";
-import SwList from "@/components/SwList.vue";
+import SwList from "@/components/SearchResultList.vue";
 
 export default {
   data() {
