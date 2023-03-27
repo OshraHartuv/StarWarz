@@ -1,35 +1,16 @@
-# starter
+# StarWarz
 
-This template should help get you started developing with Vue 3 in Vite.
+StarWarz is a frontend app that allows you to view, edit, and delete all the Star Wars data you've ever wanted, including planets, spaceships, vehicles, people, films, and species.
 
-## Recommended IDE Setup
+I used Vue3, Vuex, and Vuetify for styling. StarWarz also features a caching mechanism for the data provided by https://swapi.dev.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+This was my first time using Vuetify, and I learned a lot from the experience. Thank you for the opportunity.
 
-## Customize configuration
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+<img src="https://res.cloudinary.com/oshra/image/upload/v1679943344/liquidity-1_aomd5l.png"/>
 
-## Project Setup
 
-```sh
-npm install
-```
+<img src="https://res.cloudinary.com/oshra/image/upload/v1679943448/liquidity-2_lzjwot.png"/>
 
-### Compile and Hot-Reload for Development
 
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
-
-### Run Unit Tests with [Vitest](https://vitest.dev/)
-
-```sh
-npm run test:unit
-```
+<img src="https://res.cloudinary.com/oshra/image/upload/v1679943449/liquidity-3_g3n8lb.png"/>
