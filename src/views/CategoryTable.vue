@@ -1,40 +1,63 @@
 <template>
   <div v-if="entities && entities.length">
-    <v-hover v-slot="{ isHovering, props }">
-      <v-data-table
-        :headers="headers"
-        hide-default-footer
-        :items="entities"
-        :loading="loading"
-        item-value="name"
-        :items-length="totalItems"
-        class="elevation-1"
-        @hover:row="hovering"
-        :elevation="isHovering ? 12 : 2"
-        :class="{ 'on-hover': isHovering }"
-        v-bind="props"
-      >
-        <template v-slot:item.actions="{ item }">
-          <v-btn
-            :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
-            class="mr-5 btn"
-            @click="editEntity(item.raw)"
-          >Edit</v-btn>
-          <v-btn
-            class="btn"
-            :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
-            @click="removeEntity(item.raw)"
-          >Delete</v-btn>
-        </template>
+    <v-data-table
+      :headers="headers"
+      hide-default-footer
+      :items="entities"
+      :loading="loading"
+      item-value="name"
+      :items-length="totalItems"
+      class="elevation-1"
+    >
+      <!-- <template v-slot:items="{ items }">
+        <v-hover v-slot="{ isHovering, props }" update:modelValue>
 
-        <!-- @update:options="options=$event" -->
-        <template v-slot:bottom>
-          <div class="text-center pt-2">
-            <!-- <v-pagination v-model="page" :length="options.pageCount"></v-pagination> -->
+          <div v-bind="props" :elevation="isHovering ? 12 : 2" :class="{ 'on-hover': isHovering }">
+            <v-data-table-rows :items="items"></v-data-table-rows>
+
           </div>
-        </template>
-      </v-data-table>
-    </v-hover>
+        </v-hover>
+      </template>-->
+
+      <!-- <template v-slot:headers="{title}">
+          <th v-for="header in headers" :key="header.title"><td>{{ header.title }}</td><td>Actions</td></th>
+      </template> -->
+<!-- 
+      <template v-slot:item="{item}">
+        <tr @mouseover="selectItem(item)" @mouseleave="unSelectItem(item)">
+          <td v-for="key in entityKeys" :key="key">{{ item.raw[key] }}</td>
+          {{ item[key] }}
+          <td>
+              <v-btn  :class="{ 'show-btn': item === selectedItem, 'hide-btn': item !== selectedItem }" class="mr-5 btn" @click="editEntity(item.raw)">Edit</v-btn>
+              <v-btn  :class="{ 'show-btn': item === selectedItem, 'hide-btn': item !== selectedItem }" class="btn" @click="removeEntity(item.raw)">Delete</v-btn>
+          </td>
+        </tr>
+      </template> -->
+
+      <template v-slot:item.actions="{ item }">
+        <v-hover v-slot="{ isHovering, props }">
+          <div v-bind="props" :elevation="isHovering ? 12 : 2" :class="{ 'on-hover': isHovering }">
+            <v-btn
+              :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
+              class="mr-5 btn"
+              @click="editEntity(item.raw)"
+            >Edit</v-btn>
+            <v-btn
+              class="btn"
+              :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
+              @click="removeEntity(item.raw)"
+            >Delete</v-btn>
+          </div>
+        </v-hover>
+      </template>
+
+      <!-- @update:options="options=$event" -->
+      <template v-slot:bottom>
+        <div class="text-center pt-2">
+          <!-- <v-pagination v-model="page" :length="options.pageCount"></v-pagination> -->
+        </div>
+      </template>
+    </v-data-table>
     <RouterView />
   </div>
 </template>
@@ -45,7 +68,7 @@ import { utilService } from "@/services/util.service.js";
 export default {
   data() {
     return {
-      transparent: "rgba(255, 255, 255, 0)",
+      selectedItem: null,
       options: {
         pageCount: 1
       },
@@ -108,13 +131,21 @@ export default {
         }
       });
     },
-    hovering() {
-      console.log("yesss");
+    selectItem(item) {
+      this.selectedItem = item;
+    },
+    unSelectItem(item) {
+      this.selectedItem = false;
     }
   },
   computed: {
     entities() {
       return this.$store.getters.categoryEntitiesPerPage;
+    },
+    entityKeys() {
+      const keys =  Object.keys(this.entities[0]).filter(key => key !== "id")
+      keys.push('Actions')
+      return keys
     },
     headers() {
       const headers = Object.keys(this.entities[0])
@@ -149,14 +180,6 @@ export default {
 </script>
 
 <style scoped>
-.v-data-table-server {
-  transition: opacity 0.4s ease-in-out;
-}
-
-.v-data-table-server:not(.on-hover) {
-  opacity: 0.6;
-}
-
 .btn {
   transition: opacity 0.2s linear;
 }
