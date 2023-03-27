@@ -47,6 +47,7 @@ export default {
       });
     },
     highlightSearchTerm(name) {
+      if (!name) return 
       return name.replace(
         new RegExp(this.filterBy, "gi"),
         '<span class="font-weight-bold">$&</span>'

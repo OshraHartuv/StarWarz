@@ -1,4 +1,5 @@
 <template>
+  <!-- Delete style and comments@@@@@@ -->
   <div v-if="entities && entities.length">
     <v-data-table-server
       :headers="headers"
@@ -25,6 +26,7 @@
               >Edit</v-btn>
             </td>
             <td>
+              <!-- <td> -->
               <v-btn
                 class="btn"
                 :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
@@ -166,3 +168,22 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.btn {
+  transition: opacity 0.2s linear;
+}
+
+.show-btn {
+  opacity: 1;
+}
+.hide-btn {
+  opacity: 0;
+}
+
+.action {
+  display: flex;
+  justify-content: end;
+  align-items: center;
+}
+</style>
