@@ -36,6 +36,12 @@ export default {
             if (!entities) return
             return entities.slice(pageIdx * pageSize, pageEndIdx)
         },
+        categoryPageCount({ pageSize }, { categoryCount }) {
+            return Math.ceil(categoryCount / pageSize)
+        },
+        categoryPageSize({ pageSize }) {
+            return pageSize
+        },
         pageEndIdx({ pageIdx, pageSize, categoryCount }) {
             const endIdx = (pageIdx + 1) * pageSize
             return endIdx > categoryCount ? categoryCount : endIdx
