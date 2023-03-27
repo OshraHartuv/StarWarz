@@ -1,14 +1,13 @@
 <template>
-  <!-- Delete style and comments@@@@@@ -->
   <div v-if="entities && entities.length">
     <v-data-table-server
       :headers="headers"
-      hide-default-footer
       :items="entities"
       :loading="loading"
-      item-value="name"
       :items-length="0"
+      item-value="name"
       class="elevation-1"
+      hide-default-footer
     >
       <template v-slot:item.actions="{ item }">
         <v-hover v-slot="{ isHovering, props }">
@@ -26,7 +25,6 @@
               >Edit</v-btn>
             </td>
             <td>
-              <!-- <td> -->
               <v-btn
                 class="btn"
                 :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
@@ -67,12 +65,6 @@ import { utilService } from "@/services/util.service.js";
 export default {
   data() {
     return {
-      options: {
-        pageCount: 1
-      },
-      itemsPerPage: 5,
-      pageIdx: 1,
-      totalItems: 0,
       loading: true
     };
   },
@@ -143,7 +135,7 @@ export default {
           return {
             title: utilService.formatString(key),
             align: idx ? "end" : "start",
-            sortable: true,
+
             key: key
           };
         });
