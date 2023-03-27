@@ -54,9 +54,7 @@ export default {
     loadEditEntityData() {
       const { id } = this.$route.params;
       const { categoryData } = this.$store.getters;
-      if (!categoryData || !categoryData.results.length)
-        this.redirectToCategoryTable();
-
+      if (!categoryData || !categoryData.results.length) this.redirectToCategoryTable();
       const editEntity = categoryData.results.find(entity => entity.id === id);
       if (editEntity) this.editEntity = JSON.parse(JSON.stringify(editEntity));
       else this.redirectToCategoryTable();
