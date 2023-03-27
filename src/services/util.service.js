@@ -15,20 +15,15 @@ function formatString(str) {
         .toLowerCase()
         .replace(/^./, str.charAt(0).toUpperCase())
 
-    // Split camel case string into words
     const words = camelCase.split(' ')
-
-    // Capitalize each word
     const capitalizedWords = words.map((word, idx) => (idx ? word.charAt(0).toLowerCase() : word.charAt(0).toUpperCase()) + word.slice(1))
-
-    // Join words into final string
     return capitalizedWords.join(' ')
 }
 
 function getRandomInt(min, max) {
     min = Math.ceil(min)
     max = Math.floor(max)
-    return Math.floor(Math.random() * (max - min + 1)) + min //The maximum is inclusive and the minimum is inclusive
+    return Math.floor(Math.random() * (max - min + 1)) + min 
 }
 
 function debounce(func, wait) {

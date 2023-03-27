@@ -111,8 +111,7 @@ export default {
 
             // Fetching
             try {
-                console.log('going to swapi')
-                const newCategoryData = await swapiService.getNextPage(category, filterBy)
+                const newCategoryData = await swapiService.getNextPageFromSwapi(category, filterBy)
                 commit({ type: 'setPage', diff })
                 commit({ type: 'setCategoryData', categoryData: newCategoryData })
             } catch (err) {

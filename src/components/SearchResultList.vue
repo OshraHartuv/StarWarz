@@ -41,17 +41,22 @@ export default {
   },
   methods: {
     goToCategoryPage(category) {
-      this.$router.push(`/${category}/${this.filterBy}`);
+      this.$router.push({
+        name: "CategoryTable",
+        params: { category, filterBy: this.filterBy },
+      });
     },
     highlightSearchTerm(name) {
-        return name.replace(new RegExp(this.filterBy, 'gi'), '<span class="font-weight-bold">$&</span>');
-      }
+      return name.replace(
+        new RegExp(this.filterBy, "gi"),
+        '<span class="font-weight-bold">$&</span>'
+      );
+    }
   },
   computed: {},
   watch: {
     swData: {
       handler(swData) {
-        console.log("swData ", swData);
         const searchResults = Object.values(swData);
         this.isCategoriesDataEmpty = !searchResults.length ? true : false;
         this.isCategoryDataEmpty = searchResults.every(result => !result.length)

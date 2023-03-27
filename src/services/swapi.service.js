@@ -3,8 +3,7 @@ import { utilService } from './util.service.js'
 import { cacheService } from './cache.service.js'
 
 const SWAPI_BASE_URL = 'https://swapi.dev/api/'
-const CATEGORIES = ['vehicles', 'people']
-// const CATEGORIES = [ 'people','planets', 'starships', 'vehicles', 'films', 'species']
+const CATEGORIES = [ 'people','planets', 'starships', 'vehicles', 'films', 'species']
 
 async function getSwDataBySearch(searchTerm) {
     try {
@@ -26,9 +25,8 @@ async function loadSwCategoryData(category, searchTerm) {
     return cacheService.loadSwCategoryDataFromCache(category, searchTerm) || (await _loadSwCategoryDataFromApi(category, searchTerm))
 }
 
-async function getNextPage(category, searchTerm) {
+async function getNextPageFromSwapi(category, searchTerm) {
     try {
-        // Test this
         const currSwCategoryData = await loadSwCategoryData(category, searchTerm)
         if (!currSwCategoryData.next) return
         const newSwCategoryData = await axios.get(currSwCategoryData.next)
@@ -49,7 +47,6 @@ function getCategories() {
 }
 
 async function _loadSwCategoryDataFromApi(category, searchTerm) {
-    console.log('Getting data from api')
     try {
         const response = await axios.get(`${SWAPI_BASE_URL}${category}/?search=${searchTerm}`)
         const { data, config } = response
@@ -90,5 +87,5 @@ export const swapiService = {
     getSwDataBySearch,
     loadSwCategoryData,
     getCategories,
-    getNextPage,
+    getNextPageFromSwapi,
 }

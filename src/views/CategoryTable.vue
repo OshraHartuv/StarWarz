@@ -10,30 +10,6 @@
       :items-length="0"
       class="elevation-1"
     >
-      <!-- <template v-slot:items="{ items }">
-        <v-hover v-slot="{ isHovering, props }" update:modelValue>
-
-          <div v-bind="props" :elevation="isHovering ? 12 : 2" :class="{ 'on-hover': isHovering }">
-            <v-data-table-rows :items="items"></v-data-table-rows>
-
-          </div>
-        </v-hover>
-      </template>-->
-
-      <!-- <template v-slot:headers="{title}">
-          <th v-for="header in headers" :key="header.title"><td>{{ header.title }}</td><td>Actions</td></th>
-      </template>-->
-      <!-- 
-      <template v-slot:item="{item}">
-        <tr @mouseover="selectItem(item)" @mouseleave="unSelectItem(item)">
-          <td v-for="key in entityKeys" :key="key">{{ item.raw[key] }}</td>
-          {{ item[key] }}
-          <td>
-              <v-btn  :class="{ 'show-btn': item === selectedItem, 'hide-btn': item !== selectedItem }" class="mr-5 btn" @click="editEntity(item.raw)">Edit</v-btn>
-              <v-btn  :class="{ 'show-btn': item === selectedItem, 'hide-btn': item !== selectedItem }" class="btn" @click="removeEntity(item.raw)">Delete</v-btn>
-          </td>
-        </tr>
-      </template>-->
 
       <template v-slot:item.actions="{ item }">
         <v-hover v-slot="{ isHovering, props }">
@@ -65,6 +41,7 @@
           </v-row>
         </v-container>
       </template>
+      
     </v-data-table-server>
     <RouterView />
   </div>
@@ -76,7 +53,6 @@ import { utilService } from "@/services/util.service.js";
 export default {
   data() {
     return {
-      // selectedItem: null,
       options: {
         pageCount: 1
       },
@@ -87,10 +63,11 @@ export default {
     };
   },
   async created() {
+
     this.loading = true;
     const filterByParam = this.$route.params.filterBy;
     const categoryByParam = this.$route.params.category;
-    if (filterByParam !== this.filterBy)
+    if (filterByParam !== this.filterByInStore)
       this.$store.commit({ type: "setFilter", filterBy: filterByParam });
     try {
       await this.$store.dispatch({
@@ -99,7 +76,7 @@ export default {
       });
     } catch (err) {
       console.error(`Error while setting category => ${err.message}`);
-      // Notification
+      this.$notify("Oops... Something went wrong");
     } finally {
       this.loading = false;
     }
@@ -112,7 +89,7 @@ export default {
         this.totalDesserts = this.entities.length;
       } catch (err) {
         console.error(`Error while setting page => ${err.message}`);
-        // Notification
+        this.$notify("Oops... Something went wrong");
       } finally {
         this.loading = false;
       }
@@ -126,7 +103,7 @@ export default {
         });
       } catch (err) {
         console.error(`Error while removing entity => ${err.message}`);
-        //Notification
+        this.$notify("Oops... Something went wrong");
       } finally {
         this.loading = false;
       }
@@ -138,25 +115,14 @@ export default {
           category: this.$route.params.category,
           filterBy: this.$route.params.filterBy,
           id
-        }
+        },
       });
     }
-    // selectItem(item) {
-    //   this.selectedItem = item;
-    // },
-    // unSelectItem(item) {
-    //   this.selectedItem = false;
-    // }
   },
   computed: {
     entities() {
       return this.$store.getters.categoryEntitiesPerPage;
     },
-    // entityKeys() {
-    //   const keys =  Object.keys(this.entities[0]).filter(key => key !== "id")
-    //   keys.push('Actions')
-    //   return keys
-    // },
     headers() {
       const headers = Object.keys(this.entities[0])
         .filter(key => key !== "id")
@@ -177,7 +143,7 @@ export default {
       });
       return headers;
     },
-    filterBy() {
+    filterByInStore() {
       return this.$store.getters.filterBy;
     },
     hasNextPage() {

@@ -36,8 +36,10 @@ export default {
     categoryData: {
       handler() {
         if (this.categoryData) this.loadEditEntityData();
-        else this.redirectToCategoryTable();
-        // Notification
+        else {
+          this.redirectToCategoryTable();
+          this.$notify("Oops... Something went wrong");
+        }
       },
       immediate: true
     }
@@ -60,7 +62,6 @@ export default {
       else this.redirectToCategoryTable();
     },
     redirectToCategoryTable() {
-      // Notification
       this.$router.push({
         name: "CategoryTable",
         params: {
@@ -77,7 +78,7 @@ export default {
         });
       } catch (err) {
         console.error(`Error while saving => ${err.message}`);
-        //Notification
+        this.$notify("Oops... Something went wrong");
       } finally {
         this.dialog = false;
         this.redirectToCategoryTable();
@@ -85,7 +86,7 @@ export default {
     },
     closeDialog() {
       this.dialog = false;
-      this.redirectToCategoryTable;
+      this.redirectToCategoryTable();
     }
   },
   computed: {
