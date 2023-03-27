@@ -1,4 +1,5 @@
 <template>
+  <!-- Delete style and comments@@@@@@ -->
   <div v-if="entities && entities.length">
     <v-data-table-server
       :headers="headers"
@@ -36,18 +37,18 @@
 
       <template v-slot:item.actions="{ item }">
         <v-hover v-slot="{ isHovering, props }">
-          <div v-bind="props" :elevation="isHovering ? 12 : 2" :class="{ 'on-hover': isHovering }">
-            <td class="v-data-table__td v-data-table-column--align-end">
+          <div class="v-data-table__td v-data-table-column--align-end action" v-bind="props" :elevation="isHovering ? 12 : 2" :class="{ 'on-hover': isHovering }">
+            <td>
               <v-btn
                 class="mr-5 btn"
                 :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
                 @click="editEntity(item.raw)"
               >Edit</v-btn>
             </td>
-            <td class="v-data-table__td v-data-table-column--align-end">
+            <td>
             <!-- <td> -->
               <v-btn
-                class="btn"
+                class="btn "
                 :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
                 @click="removeEntity(item.raw)"
               >Delete</v-btn>
@@ -200,4 +201,5 @@ export default {
 .hide-btn {
   opacity: 0;
 }
+
 </style>

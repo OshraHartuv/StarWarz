@@ -3,8 +3,8 @@ import { swapiService } from '@/services/swapi.service.js'
 export default {
     state: {
         swData: null,
-        filterBy: '',
         category: '',
+        filterBy: '',
         pageIdx: 0,
         pageSize: 10,
     },
@@ -35,12 +35,6 @@ export default {
             const entities = categoryData.results
             if (!entities) return
             return entities.slice(pageIdx * pageSize, pageEndIdx)
-        },
-        categoryPageCount({ pageSize }, { categoryCount }) {
-            return Math.ceil(categoryCount / pageSize)
-        },
-        categoryPageSize({ pageSize }) {
-            return pageSize
         },
         pageEndIdx({ pageIdx, pageSize, categoryCount }) {
             const endIdx = (pageIdx + 1) * pageSize

@@ -1,4 +1,4 @@
-import { swEditService } from '@/services/sw.edit.service'
+import { cacheService } from '@/services/cache.service'
 
 export default {
     state: {
@@ -27,7 +27,7 @@ export default {
             try {
                 const { category, filterBy, categoryData } = getters
                 if (!category || !categoryData) return
-                const savedEntity =await swEditService.saveSwEntity(entityToSave, category, filterBy)
+                const savedEntity =await cacheService.saveSwEntity(entityToSave, category, filterBy)
                 commit({ type: 'saveEntity', entity: savedEntity})
                 commit({ type: 'setEditEntity', editEntity: savedEntity })
             } catch (err) {
@@ -39,7 +39,7 @@ export default {
             try {
                 const { category, filterBy, categoryData } = getters
                 if (!category || !categoryData) return
-                await swEditService.removeSwEntity(id, category, filterBy)
+                await cacheService.removeSwEntity(id, category, filterBy)
                 commit({ type: 'removeEntity', entityId: id})
                 commit({ type: 'setEditEntity', editEntity: {} })
             } catch (err) {

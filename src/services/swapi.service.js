@@ -1,6 +1,6 @@
 import axios from 'axios'
 import { utilService } from './util.service.js'
-import { storageService } from './storage.service.js'
+import { cacheService } from './cache.service.js'
 
 const SWAPI_BASE_URL = 'https://swapi.dev/api/'
 const CATEGORIES = ['vehicles', 'people']
@@ -23,19 +23,20 @@ async function getSwDataBySearch(searchTerm) {
 }
 
 async function loadSwCategoryData(category, searchTerm) {
-    return storageService.loadSwCategoryDataFromCache(category, searchTerm) || (await _loadSwCategoryDataFromApi(category, searchTerm))
+    return cacheService.loadSwCategoryDataFromCache(category, searchTerm) || (await _loadSwCategoryDataFromApi(category, searchTerm))
 }
 
 async function getNextPage(category, searchTerm) {
     try {
+        // Test this
         const currSwCategoryData = await loadSwCategoryData(category, searchTerm)
-        if (!currSwCategoryData.next) throw new Error('No next page in swapi')
+        if (!currSwCategoryData.next) return
         const newSwCategoryData = await axios.get(currSwCategoryData.next)
         const { data } = newSwCategoryData
         const formatCategoryEntities = _formatCategoryEntities(category, data.results)
         currSwCategoryData.next = data.next
         currSwCategoryData.results.push(...formatCategoryEntities)
-        storageService.saveSwCategoryDataToCache(category, searchTerm, currSwCategoryData)
+        cacheService.saveSwCategoryDataToCache(category, searchTerm, currSwCategoryData)
         return currSwCategoryData
     } catch (err) {
         console.error(`Error while getting next page => ${err.message}`)
@@ -54,7 +55,7 @@ async function _loadSwCategoryDataFromApi(category, searchTerm) {
         const { data, config } = response
         data.results = _formatCategoryEntities(category, data.results)
         const formattedData = { ...data, url: config.url }
-        storageService.saveSwCategoryDataToCache(category, searchTerm, formattedData)
+        cacheService.saveSwCategoryDataToCache(category, searchTerm, formattedData)
         return formattedData
     } catch (err) {
         console.error(`Error while loading data from api => ${err.message}`)
