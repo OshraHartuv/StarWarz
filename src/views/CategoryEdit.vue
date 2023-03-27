@@ -5,7 +5,7 @@
         <v-card-text>
           <v-container>
             <v-row>
-              <v-col >
+              <v-col>
                 <v-text-field
                   v-for="key in editEntityKeys"
                   :key="key"
@@ -34,33 +34,40 @@
 export default {
   watch: {
     categoryData: {
-      async handler() {
+      handler() {
         if (this.categoryData) this.loadEditEntityData();
+        else this.redirectToCategoryTable();
+        // Notification
       },
       immediate: true
     }
   },
   data() {
     return {
-      isDialogOpen: true
+      isDialogOpen: true,
+      editEntity: null
     };
   },
   methods: {
-    async loadEditEntityData() {
+    loadEditEntityData() {
       const { id } = this.$route.params;
-      try {
-        await this.$store.dispatch({ type: "loadSwEntityById", id });
-      } catch (err) {
-        console.error(`Error while loading entity => ${err.message}`);
-        //Notification
-        this.$router.push({
-          name: "CategoryTable",
-          params: {
-            category: this.$route.params.category,
-            filterBy: this.$route.params.filterBy
-          }
-        });
-      }
+      const { categoryData } = this.$store.getters;
+      if (!categoryData || !categoryData.results.length)
+        this.redirectToCategoryTable();
+
+      const editEntity = categoryData.results.find(entity => entity.id === id);
+      if (editEntity) this.editEntity = JSON.parse(JSON.stringify(editEntity));
+      else this.redirectToCategoryTable();
+    },
+    redirectToCategoryTable() {
+      // Notification
+      this.$router.push({
+        name: "CategoryTable",
+        params: {
+          category: this.$route.params.category,
+          filterBy: this.$route.params.filterBy
+        }
+      });
     },
     async save() {
       try {
@@ -73,33 +80,15 @@ export default {
         //Notification
       } finally {
         this.dialog = false;
-        this.$router.push({
-          name: "CategoryTable",
-          params: {
-            category: this.$route.params.category,
-            filterBy: this.$route.params.filterBy
-          }
-        });
+        this.redirectToCategoryTable();
       }
     },
     closeDialog() {
       this.dialog = false;
-      this.$router.push({
-        name: "CategoryTable",
-        params: {
-          category: this.$route.params.category,
-          filterBy: this.$route.params.filterBy
-        }
-      });
+      this.redirectToCategoryTable;
     }
   },
   computed: {
-    editEntity() {
-      const entityCopy = JSON.parse(
-        JSON.stringify(this.$store.getters.editEntity)
-      );
-      return entityCopy;
-    },
     editEntityKeys() {
       const keys = Object.keys(this.editEntity);
       return keys.filter(key => key !== "id");

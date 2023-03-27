@@ -1,4 +1,5 @@
 import { swapiService } from '@/services/swapi.service.js'
+import { cacheService } from '@/services/cache.service'
 
 export default {
     state: {
@@ -133,6 +134,28 @@ export default {
                 commit({ type: 'setSwData', swData: swDataCopy })
             } catch (err) {
                 console.error(`Error while setting category => ${err.message}`)
+                throw err
+            }
+        },
+        async saveEntity({ getters, commit }, { entityToSave }) {
+            try {
+                const { category, filterBy, categoryData } = getters
+                if (!category || !categoryData) return
+                const savedEntity = await cacheService.saveSwEntity(entityToSave, category, filterBy)
+                commit({ type: 'saveEntity', entity: savedEntity })
+            } catch (err) {
+                console.error(`Error while saving entity (${entityToSave.id}) in store => ${err.message}`)
+                throw err
+            }
+        },
+        async removeEntity({ getters, commit }, { id }) {
+            try {
+                const { category, filterBy, categoryData } = getters
+                if (!category || !categoryData) return
+                await cacheService.removeSwEntity(id, category, filterBy)
+                commit({ type: 'removeEntity', entityId: id })
+            } catch (err) {
+                console.error(`Error while removing entity (${id}) in store => ${err.message}`)
                 throw err
             }
         },
