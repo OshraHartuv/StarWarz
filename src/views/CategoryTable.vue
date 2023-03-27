@@ -1,5 +1,4 @@
 <template>
-  <!-- Delete style and comments@@@@@@ -->
   <div v-if="entities && entities.length">
     <v-data-table-server
       :headers="headers"
@@ -10,10 +9,14 @@
       :items-length="0"
       class="elevation-1"
     >
-
       <template v-slot:item.actions="{ item }">
         <v-hover v-slot="{ isHovering, props }">
-          <div class="v-data-table__td v-data-table-column--align-end action" v-bind="props" :elevation="isHovering ? 12 : 2" :class="{ 'on-hover': isHovering }">
+          <div
+            class="v-data-table__td v-data-table-column--align-end action"
+            v-bind="props"
+            :elevation="isHovering ? 12 : 2"
+            :class="{ 'on-hover': isHovering }"
+          >
             <td>
               <v-btn
                 class="mr-5 btn"
@@ -22,9 +25,8 @@
               >Edit</v-btn>
             </td>
             <td>
-            <!-- <td> -->
               <v-btn
-                class="btn "
+                class="btn"
                 :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
                 @click="removeEntity(item.raw)"
               >Delete</v-btn>
@@ -36,12 +38,22 @@
       <template v-slot:bottom>
         <v-container>
           <v-row class="my-3 flex justify-center">
-              <v-btn color="green-darken-1" class="mr-5" variant="outlined" @click="getPage(-1)" v-if="hasPrevPage">Previous page</v-btn>
-              <v-btn color="green-darken-1" variant="outlined" @click="getPage(1)" v-if="hasNextPage">Next page</v-btn>
+            <v-btn
+              color="green-darken-1"
+              class="mr-5"
+              variant="outlined"
+              @click="getPage(-1)"
+              v-if="hasPrevPage"
+            >Previous page</v-btn>
+            <v-btn
+              color="green-darken-1"
+              variant="outlined"
+              @click="getPage(1)"
+              v-if="hasNextPage"
+            >Next page</v-btn>
           </v-row>
         </v-container>
       </template>
-      
     </v-data-table-server>
     <RouterView />
   </div>
@@ -63,7 +75,6 @@ export default {
     };
   },
   async created() {
-
     this.loading = true;
     const filterByParam = this.$route.params.filterBy;
     const categoryByParam = this.$route.params.category;
@@ -115,7 +126,7 @@ export default {
           category: this.$route.params.category,
           filterBy: this.$route.params.filterBy,
           id
-        },
+        }
       });
     }
   },
@@ -155,17 +166,3 @@ export default {
   }
 };
 </script>
-
-<style scoped>
-.btn {
-  transition: opacity 0.2s linear;
-}
-
-.show-btn {
-  opacity: 1;
-}
-.hide-btn {
-  opacity: 0;
-}
-
-</style>
