@@ -1,22 +1,41 @@
 <template>
   <div v-if="entities && entities.length">
-    <v-data-table-server
-      :headers="headers"
-      hide-default-footer
-      :items="entities"
-      :loading="loading"
-      item-value="name"
-      class="elevation-1"
-      @click:row="onRowClick"
-    >
-      <!-- @update:options="getUpdate" -->
-      <template v-slot:bottom>
-        <div class="text-center pt-2">
-          <!-- <v-pagination v-model="page" :length="options.pageCount"></v-pagination> -->
-        </div>
-      </template>
-    </v-data-table-server>
-    <RouterView/>
+    <v-hover v-slot="{ isHovering, props }">
+      <v-data-table-server
+        :headers="headers"
+        hide-default-footer
+        :items="entities"
+        :loading="loading"
+        item-value="name"
+        :items-length="totalItems"
+        class="elevation-1"
+        @hover:row="hovering"
+        :elevation="isHovering ? 12 : 2"
+        :class="{ 'on-hover': isHovering }"
+        v-bind="props"
+      >
+        <template v-slot:item.actions="{ item }">
+          <v-btn
+            :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
+            class="mr-5 btn"
+            @click="editEntity(item.raw)"
+          >Edit</v-btn>
+          <v-btn
+            class="btn"
+            :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
+            @click="removeEntity(item.raw)"
+          >Delete</v-btn>
+        </template>
+
+        <!-- @update:options="options=$event" -->
+        <template v-slot:bottom>
+          <div class="text-center pt-2">
+            <!-- <v-pagination v-model="page" :length="options.pageCount"></v-pagination> -->
+          </div>
+        </template>
+      </v-data-table-server>
+    </v-hover>
+    <RouterView />
   </div>
 </template>
 
@@ -26,9 +45,11 @@ import { utilService } from "@/services/util.service.js";
 export default {
   data() {
     return {
+      transparent: "rgba(255, 255, 255, 0)",
       options: {
         pageCount: 1
       },
+      totalItems: 0,
       loading: true,
       page: 1
     };
@@ -63,7 +84,7 @@ export default {
         this.loading = false;
       }
     },
-    async remove(id) {
+    async removeEntity({ id }) {
       this.loading = true;
       try {
         await this.$store.dispatch({
@@ -77,10 +98,18 @@ export default {
         this.loading = false;
       }
     },
-    onRowClick(ev, {item}) {
-      if (!item) return;
-      const id = item.raw.id;
-      this.$router.push({ name: 'CategoryEdit', params: { category: this.$route.params.category, filterBy: this.$route.params.filterBy, id } })
+    editEntity({ id }) {
+      this.$router.push({
+        name: "CategoryEdit",
+        params: {
+          category: this.$route.params.category,
+          filterBy: this.$route.params.filterBy,
+          id
+        }
+      });
+    },
+    hovering() {
+      console.log("yesss");
     }
   },
   computed: {
@@ -88,7 +117,7 @@ export default {
       return this.$store.getters.categoryEntitiesPerPage;
     },
     headers() {
-      return Object.keys(this.entities[0])
+      const headers = Object.keys(this.entities[0])
         .filter(key => key !== "id")
         .map((key, idx) => {
           return {
@@ -98,6 +127,13 @@ export default {
             key: key
           };
         });
+      headers.push({
+        title: "",
+        align: "end",
+        key: "actions",
+        sortable: false
+      });
+      return headers;
     },
     filterBy() {
       return this.$store.getters.filterBy;
@@ -111,3 +147,24 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.v-data-table-server {
+  transition: opacity 0.4s ease-in-out;
+}
+
+.v-data-table-server:not(.on-hover) {
+  opacity: 0.6;
+}
+
+.btn {
+  transition: opacity 0.2s linear;
+}
+
+.show-btn {
+  opacity: 1;
+}
+.hide-btn {
+  opacity: 0;
+}
+</style>
