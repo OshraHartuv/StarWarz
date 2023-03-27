@@ -17,9 +17,11 @@ export default {
     },
     actions: {
         loadSwEntityById({ getters, commit }, { id }) {
-            if (!getters.categoryData || !getters.categoryData.results.length) return
+            if (!getters.categoryData || !getters.categoryData.results.length) throw new Error('No data in store')
             const editEntity = getters.categoryData.results.find((entity) => entity.id === id)
             if (editEntity) commit({ type: 'setEditEntity', editEntity })
+            else throw new Error('No entity found')
+            
         },
         async saveEntity({ getters, commit }, { entityToSave }) {
             try {

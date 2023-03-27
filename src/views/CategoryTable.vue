@@ -21,8 +21,8 @@
 
       <!-- <template v-slot:headers="{title}">
           <th v-for="header in headers" :key="header.title"><td>{{ header.title }}</td><td>Actions</td></th>
-      </template> -->
-<!-- 
+      </template>-->
+      <!-- 
       <template v-slot:item="{item}">
         <tr @mouseover="selectItem(item)" @mouseleave="unSelectItem(item)">
           <td v-for="key in entityKeys" :key="key">{{ item.raw[key] }}</td>
@@ -32,21 +32,25 @@
               <v-btn  :class="{ 'show-btn': item === selectedItem, 'hide-btn': item !== selectedItem }" class="btn" @click="removeEntity(item.raw)">Delete</v-btn>
           </td>
         </tr>
-      </template> -->
+      </template>-->
 
       <template v-slot:item.actions="{ item }">
         <v-hover v-slot="{ isHovering, props }">
           <div v-bind="props" :elevation="isHovering ? 12 : 2" :class="{ 'on-hover': isHovering }">
-            <v-btn
-              :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
-              class="mr-5 btn"
-              @click="editEntity(item.raw)"
-            >Edit</v-btn>
-            <v-btn
-              class="btn"
-              :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
-              @click="removeEntity(item.raw)"
-            >Delete</v-btn>
+            <td>
+              <v-btn
+                :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
+                class="mr-5 btn"
+                @click="editEntity(item.raw)"
+              >Edit</v-btn>
+            </td>
+            <td>
+              <v-btn
+                class="btn"
+                :class="{ 'show-btn': isHovering, 'hide-btn': !isHovering }"
+                @click="removeEntity(item.raw)"
+              >Delete</v-btn>
+            </td>
           </div>
         </v-hover>
       </template>
@@ -68,7 +72,7 @@ import { utilService } from "@/services/util.service.js";
 export default {
   data() {
     return {
-      selectedItem: null,
+      // selectedItem: null,
       options: {
         pageCount: 1
       },
@@ -130,23 +134,23 @@ export default {
           id
         }
       });
-    },
-    selectItem(item) {
-      this.selectedItem = item;
-    },
-    unSelectItem(item) {
-      this.selectedItem = false;
     }
+    // selectItem(item) {
+    //   this.selectedItem = item;
+    // },
+    // unSelectItem(item) {
+    //   this.selectedItem = false;
+    // }
   },
   computed: {
     entities() {
       return this.$store.getters.categoryEntitiesPerPage;
     },
-    entityKeys() {
-      const keys =  Object.keys(this.entities[0]).filter(key => key !== "id")
-      keys.push('Actions')
-      return keys
-    },
+    // entityKeys() {
+    //   const keys =  Object.keys(this.entities[0]).filter(key => key !== "id")
+    //   keys.push('Actions')
+    //   return keys
+    // },
     headers() {
       const headers = Object.keys(this.entities[0])
         .filter(key => key !== "id")
@@ -162,7 +166,8 @@ export default {
         title: "",
         align: "end",
         key: "actions",
-        sortable: false
+        sortable: false,
+        colspan: 2
       });
       return headers;
     },
