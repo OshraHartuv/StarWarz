@@ -1,20 +1,16 @@
 <template>
-  <section>
-    <div class="text-center">
-      <v-menu >
-        <template v-slot:activator="{ props }" transition="scale-transition">
-          <v-text-field
-            label="search"
-            variant="underlined"
-            v-model="filterBy"
-            @input="debouncedSetFilterBy"
-            v-bind="props"
-          ></v-text-field>
-        </template>
-        <SwList :swData="swData" :filterBy="getFilterBy"></SwList>
-      </v-menu>
-    </div>
-  </section>
+  <v-menu>
+    <template v-slot:activator="{ props }" transition="scale-transition">
+      <v-text-field
+        label="search"
+        variant="underlined"
+        v-model="filterBy"
+        @input="debouncedSetFilterBy"
+        v-bind="props"
+      ></v-text-field>
+    </template>
+    <SwList :swData="swData" :filterBy="getFilterBy"></SwList>
+  </v-menu>
 </template>
 
 <script>
@@ -24,7 +20,7 @@ import SwList from "@/components/SwList.vue";
 export default {
   data() {
     return {
-      filterBy: "",
+      filterBy: ""
     };
   },
   async created() {
@@ -34,7 +30,7 @@ export default {
   methods: {
     setFilterBy() {
       this.$store.dispatch({ type: "setFilter", filterBy: this.filterBy });
-    },
+    }
   },
   computed: {
     swData() {
