@@ -1,7 +1,7 @@
 <template>
   <div v-if="entities && entities.length">
     <v-hover v-slot="{ isHovering, props }">
-      <v-data-table-server
+      <v-data-table
         :headers="headers"
         hide-default-footer
         :items="entities"
@@ -33,7 +33,7 @@
             <!-- <v-pagination v-model="page" :length="options.pageCount"></v-pagination> -->
           </div>
         </template>
-      </v-data-table-server>
+      </v-data-table>
     </v-hover>
     <RouterView />
   </div>
