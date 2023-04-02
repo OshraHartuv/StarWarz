@@ -3,20 +3,14 @@
     <v-dialog v-model="isDialogOpen" width="1024" persistent>
       <v-card>
         <v-card-text>
-          <v-container>
-            <v-row>
-              <v-col>
-                <v-text-field
-                  v-for="key in editEntityKeys"
-                  :key="key"
-                  v-model="editEntity[key]"
-                  :label="key"
-                  type="text"
-                  required
-                ></v-text-field>
-              </v-col>
-            </v-row>
-          </v-container>
+          <v-text-field
+            v-for="key in editEntityKeys"
+            :key="key"
+            v-model="editEntity[key]"
+            :label="key"
+            type="text"
+            required
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -37,8 +31,8 @@ export default {
       handler() {
         if (this.categoryData) this.loadEditEntityData();
         else {
-          this.redirectToCategoryTable();
           this.$notify("Oops... Something went wrong");
+          this.closeDialog();
         }
       },
       immediate: true
@@ -54,19 +48,12 @@ export default {
     loadEditEntityData() {
       const { id } = this.$route.params;
       const { categoryData } = this.$store.getters;
-      if (!categoryData || !categoryData.results.length) this.redirectToCategoryTable();
+      if (!categoryData || !categoryData.results.length) this.closeDialog();
       const editEntity = categoryData.results.find(entity => entity.id === id);
-      if (editEntity) this.editEntity = JSON.parse(JSON.stringify(editEntity));
-      else this.redirectToCategoryTable();
-    },
-    redirectToCategoryTable() {
-      this.$router.push({
-        name: "CategoryTable",
-        params: {
-          category: this.$route.params.category,
-          filterBy: this.$route.params.filterBy
-        }
-      });
+      if (editEntity) {
+        this.editEntity = JSON.parse(JSON.stringify(editEntity));
+        this.isDialogOpen = true;
+      } else this.closeDialog();
     },
     async save() {
       try {
@@ -74,17 +61,23 @@ export default {
           type: "saveEntity",
           entityToSave: this.editEntity
         });
+        this.$notify(`Saved ${this.editEntity.name} successfully`);
       } catch (err) {
         console.error(`Error while saving => ${err.message}`);
         this.$notify("Oops... Something went wrong");
       } finally {
-        this.dialog = false;
-        this.redirectToCategoryTable();
+        this.closeDialog();
       }
     },
     closeDialog() {
       this.dialog = false;
-      this.redirectToCategoryTable();
+      this.$router.push({
+        name: "CategoryTable",
+        params: {
+          category: this.$route.params.category,
+          filterBy: this.$route.params.filterBy
+        }
+      });
     }
   },
   computed: {
