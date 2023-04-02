@@ -49,11 +49,11 @@ function getCategories() {
 async function _loadSwCategoryDataFromApi(category, searchTerm) {
     try {
         const response = await axios.get(`${SWAPI_BASE_URL}${category}/?search=${searchTerm}`)
-        const { data, config } = response
+        const { data } = response
+        delete data.previous
         data.results = _formatCategoryEntities(category, data.results)
-        const formattedData = { ...data, url: config.url }
-        cacheService.saveSwCategoryDataToCache(category, searchTerm, formattedData)
-        return formattedData
+        cacheService.saveSwCategoryDataToCache(category, searchTerm, data)
+        return data
     } catch (err) {
         console.error(`Error while loading data from api => ${err.message}`)
         throw err
