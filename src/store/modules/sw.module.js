@@ -98,7 +98,7 @@ export default {
             commit({ type: 'setFilter', filterBy })
             if (!state.category) await dispatch({ type: 'loadResults' })
         },
-        async setPage({ commit, dispatch, getters }, { diff }) {
+        async setPage({ commit, dispatch }, { diff }) {
             if (diff > 0) await dispatch({ type: 'loadNextPage', diff })
             else commit({ type: 'setPage', diff })
         },
