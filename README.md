@@ -1,5 +1,7 @@
 # StarWarz
 
+Deployed to render: https://starwarz.onrender.com
+
 StarWarz is a frontend app that allows you to view, edit, and delete all the Star Wars data you've ever wanted, including planets, spaceships, vehicles, people, films, and species.
 
 I used Vue3, Vuex, and Vuetify for styling. StarWarz also features a caching mechanism for the data provided by https://swapi.dev.
