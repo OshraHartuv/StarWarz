@@ -33,38 +33,30 @@ export default {
       type: String
     }
   },
-  data() {
-    return {
-      isCategoryDataEmpty: true,
-      isCategoriesDataEmpty: true
-    };
-  },
   methods: {
     goToCategoryPage(category) {
       this.$router.push({
         name: "CategoryTable",
-        params: { category, filterBy: this.filterBy },
+        params: { category, filterBy: this.filterBy }
       });
     },
     highlightSearchTerm(name) {
-      if (!name) return 
+      if (!name) return;
       return name.replace(
         new RegExp(this.filterBy, "gi"),
         '<span class="font-weight-bold">$&</span>'
       );
     }
   },
-  computed: {},
-  watch: {
-    swData: {
-      handler(swData) {
-        const searchResults = Object.values(swData);
-        this.isCategoriesDataEmpty = !searchResults.length ? true : false;
-        this.isCategoryDataEmpty = searchResults.every(result => !result.length)
-          ? true
-          : false;
-      },
-      immediate: true
+  computed: {
+    isCategoriesDataEmpty() {
+      const searchResults = Object.values(this.swData);
+      return searchResults.length ? false : true;
+    },
+    isCategoryDataEmpty() {
+      const searchResults = Object.values(this.swData);
+      if (!searchResults.length) return
+      return searchResults.every(result => !result.length) ? true : false;
     }
   }
 };
