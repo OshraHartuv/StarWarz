@@ -3,7 +3,7 @@
     <v-layout>
       <v-app-bar
         title="StarWars"
-        @click="$router.push('/')"
+        @click="moveToHomePage"
       ></v-app-bar>
       <v-main>
         <v-container>
@@ -14,5 +14,15 @@
     </v-layout>
   </v-app>
 </template>
+
+<script>
+export default {
+  methods:{
+    moveToHomePage(){
+      this.$router.push({name:'Home'})
+    }
+  }
+}
+</script>
 
 
