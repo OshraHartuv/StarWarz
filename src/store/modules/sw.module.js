@@ -41,11 +41,6 @@ export default {
             const endIdx = (pageIdx + 1) * pageSize //The index of the last entity in current page (if the page is full)
             return endIdx > categoryCount ? categoryCount : endIdx
         },
-        // pageEndIndex: (pageEnd)=>({ pageSize, categoryCount }) => {
-        //     const endIdx = pageEnd * pageSize //The index of the last entity in current page (if the page is full)
-        //     console.log('endIdx ',endIdx);
-        //     return endIdx > categoryCount ? categoryCount : endIdx
-        // },
         hasNextPage({ pageIdx, pageSize }, { categoryCount }) {
             return categoryCount > (pageIdx + 1) * pageSize
         },
@@ -112,9 +107,10 @@ export default {
             const nextPage = pageIdx + 2 //Next page num - e.g pageIdx = 0 next page = 2
             const endIdx = nextPage * pageSize //The index of the last entity in the next page (if the page is full)
             const pageEndIdx = totalEntities >= endIdx ? endIdx : totalEntities //Checking what is the end index even if the page is not full
-            
+
             try {
-                if (results.length < pageEndIdx) { // Fetching
+                if (results.length < pageEndIdx) {
+                    // Fetching
                     const newCategoryData = await swapiService.getNextPageFromSwapi(category, filterBy)
                     commit({ type: 'setCategoryData', categoryData: newCategoryData })
                 }
@@ -148,12 +144,13 @@ export default {
                 throw err
             }
         },
-        async removeEntity({ getters, commit }, { id }) {
+        async removeEntity({ getters, commit, dispatch }, { id }) {
             try {
                 const { category, filterBy, categoryData } = getters
                 if (!category || !categoryData) return
                 await cacheService.removeSwEntity(id, category, filterBy)
                 commit({ type: 'removeEntity', entityId: id })
+                await dispatch({ type: 'loadNextPage', diff: 0 }) //In case we are deleting an item and the next page is not in vuex- we want to call swapi for an entity to replace the deleted item.
             } catch (err) {
                 console.error(`Error while removing entity (${id}) in store => ${err.message}`)
                 throw err
