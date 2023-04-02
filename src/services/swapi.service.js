@@ -3,14 +3,14 @@ import { utilService } from './util.service.js'
 import { cacheService } from './cache.service.js'
 
 const SWAPI_BASE_URL = 'https://swapi.dev/api/'
-const CATEGORIES = [ 'people','planets', 'starships', 'vehicles', 'films', 'species']
+const CATEGORIES = ['people', 'planets', 'starships', 'vehicles', 'films', 'species']
 
 async function getSwDataBySearch(searchTerm) {
     try {
         const prms = CATEGORIES.map((category) => loadSwCategoryData(category, searchTerm))
         const values = await Promise.all(prms)
-        const dataBySearchTerm = values.reduce((acc, data) => {
-            const categoryName = _getCategoryName(data.url)
+        const dataBySearchTerm = values.reduce((acc, data, idx) => {
+            const categoryName = CATEGORIES[idx]
             acc[categoryName] = data
             return acc
         }, {})
@@ -65,7 +65,7 @@ function _formatCategoryEntities(category, entities) {
         case 'people':
             return entities.map(({ name, gender, birth_year, height, mass }) => ({ name, gender, birthYear: birth_year, height, mass, id: utilService.makeId() }))
         case 'films':
-            return entities.map(({ title, director, producer, opening_crawl }) => ({ name:title, director, producer, openingCrawl: opening_crawl, id: utilService.makeId() }))
+            return entities.map(({ title, director, producer, opening_crawl }) => ({ name: title, director, producer, openingCrawl: opening_crawl, id: utilService.makeId() }))
         case 'starships':
             return entities.map(({ name, model, starship_class, manufacturer }) => ({ name, model, starshipClass: starship_class, manufacturer, id: utilService.makeId() }))
         case 'vehicles':
@@ -75,12 +75,6 @@ function _formatCategoryEntities(category, entities) {
         case 'planets':
             return entities.map(({ name, diameter, population, climate }) => ({ name, diameter, population, climate, id: utilService.makeId() }))
     }
-}
-
-function _getCategoryName(configUrl) {
-    const url = new URL(configUrl)
-    const pathname = url.pathname
-    return pathname.split('/')[2]
 }
 
 export const swapiService = {

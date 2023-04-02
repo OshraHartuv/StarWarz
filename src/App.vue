@@ -2,7 +2,7 @@
   <v-app>
     <v-layout>
       <v-app-bar
-        title="StarWars"
+        title="StarWarz"
         @click="moveToHomePage"
       ></v-app-bar>
       <v-main>

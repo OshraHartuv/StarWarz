@@ -14,6 +14,7 @@ async function saveSwEntity(entityToSave, category, searchTerm) {
         throw err
     }
 }
+
 async function removeSwEntity(id, category, searchTerm) {
     try {
         const allCategoryData = await swapiService.loadSwCategoryData(category, searchTerm)

@@ -52,6 +52,9 @@ export default {
         setSwData(state, { swData }) {
             state.swData = swData
         },
+        updateSwCategoryData(state, { categoryData }) {
+            state.swData[state.category] = categoryData
+        },
         setFilter(state, { filterBy }) {
             state.filterBy = filterBy
         },
@@ -120,7 +123,7 @@ export default {
             }
         },
         async setCategory({ commit, state }, { category }) {
-            const { swData, filterBy } = state
+            const { filterBy } = state
             commit({ type: 'setCategory', category })
             // Not setting a category means we want to clear our data
             if (!category) {
@@ -128,9 +131,7 @@ export default {
             }
             try {
                 const newCategoryData = await swapiService.loadSwCategoryData(category, filterBy)
-                const swDataCopy = JSON.parse(JSON.stringify(swData)) || {}
-                swDataCopy[category] = newCategoryData
-                commit({ type: 'setSwData', swData: swDataCopy })
+                commit({ type: 'updateSwCategoryData', categoryData: newCategoryData })
             } catch (err) {
                 console.error(`Error while setting category => ${err.message}`)
                 throw err
