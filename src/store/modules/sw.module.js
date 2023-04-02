@@ -3,7 +3,7 @@ import { cacheService } from '@/services/cache.service'
 
 export default {
     state: {
-        swData: null,
+        swData: {},
         category: '',
         filterBy: '',
         pageIdx: 0,
@@ -60,22 +60,24 @@ export default {
             state.pageIdx = 0
         },
         setCategoryData(state, { categoryData }) {
+            console.log('state ',state);
+            console.log('categoryData ',categoryData);
             state.swData[state.category] = categoryData
         },
         setPage(state, { diff }) {
             state.pageIdx += diff
         },
-        saveEntity({ swData, category }, { entity }) {
-            const categoryResults = swData[category].results
+        saveEntity(state, { entity }) {
+            const categoryResults = state.swData[state.category].results
             const entityIdx = categoryResults.findIndex((e) => e.id === entity.id)
             if (entityIdx !== -1) categoryResults.splice(entityIdx, 1, entity)
         },
-        removeEntity({ swData, category }, { entityId }) {
-            const { results } = swData[category]
+        removeEntity(state, { entityId }) {
+            const results = state.swData[state.category].results
             const entityIdx = results.findIndex((e) => e.id === entityId)
             if (entityIdx === -1) return
             results.splice(entityIdx, 1)
-            swData[category].count--
+            state.swData[state.category].count--
         },
     },
     actions: {
@@ -123,9 +125,7 @@ export default {
             const { filterBy } = state
             commit({ type: 'setCategory', category })
             // Not setting a category means we want to clear our data
-            if (!category) {
-                return commit({ type: 'setSwData', swData: {} })
-            }
+            if (!category) return commit({ type: 'setSwData', swData: {} })
             try {
                 const newCategoryData = await swapiService.loadSwCategoryData(category, filterBy)
                 commit({ type: 'setCategoryData', categoryData: newCategoryData })
