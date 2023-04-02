@@ -52,9 +52,6 @@ export default {
         setSwData(state, { swData }) {
             state.swData = swData
         },
-        updateSwCategoryData(state, { categoryData }) {
-            state.swData[state.category] = categoryData
-        },
         setFilter(state, { filterBy }) {
             state.filterBy = filterBy
         },
@@ -62,8 +59,8 @@ export default {
             state.category = category
             state.pageIdx = 0
         },
-        setCategoryData({ swData, category }, { categoryData }) {
-            swData[category] = categoryData
+        setCategoryData(state, { categoryData }) {
+            state.swData[state.category] = categoryData
         },
         setPage(state, { diff }) {
             state.pageIdx += diff
@@ -131,7 +128,7 @@ export default {
             }
             try {
                 const newCategoryData = await swapiService.loadSwCategoryData(category, filterBy)
-                commit({ type: 'updateSwCategoryData', categoryData: newCategoryData })
+                commit({ type: 'setCategoryData', categoryData: newCategoryData })
             } catch (err) {
                 console.error(`Error while setting category => ${err.message}`)
                 throw err
