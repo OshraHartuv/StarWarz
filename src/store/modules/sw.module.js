@@ -38,9 +38,14 @@ export default {
             return entities.slice(pageIdx * pageSize, pageEndIdx)
         },
         pageEndIdx({ pageIdx, pageSize, categoryCount }) {
-            const endIdx = (pageIdx + 1) * pageSize
+            const endIdx = (pageIdx + 1) * pageSize //The index of the last entity in current page (if the page is full)
             return endIdx > categoryCount ? categoryCount : endIdx
         },
+        // pageEndIndex: (pageEnd)=>({ pageSize, categoryCount }) => {
+        //     const endIdx = pageEnd * pageSize //The index of the last entity in current page (if the page is full)
+        //     console.log('endIdx ',endIdx);
+        //     return endIdx > categoryCount ? categoryCount : endIdx
+        // },
         hasNextPage({ pageIdx, pageSize }, { categoryCount }) {
             return categoryCount > (pageIdx + 1) * pageSize
         },
@@ -60,8 +65,6 @@ export default {
             state.pageIdx = 0
         },
         setCategoryData(state, { categoryData }) {
-            console.log('state ',state);
-            console.log('categoryData ',categoryData);
             state.swData[state.category] = categoryData
         },
         setPage(state, { diff }) {
@@ -95,27 +98,27 @@ export default {
             commit({ type: 'setFilter', filterBy })
             if (!state.category) await dispatch({ type: 'loadResults' })
         },
-        async setPage({ commit, dispatch }, { diff }) {
+        async setPage({ commit, dispatch, getters }, { diff }) {
             if (diff > 0) await dispatch({ type: 'loadNextPage', diff })
             else commit({ type: 'setPage', diff })
         },
         async loadNextPage({ commit, state, getters }, { diff }) {
             const { category, filterBy, pageIdx, pageSize } = state
             const {
-                categoryData: { count, results },
+                categoryData: { count: totalEntities, results },
             } = getters
 
             // Checking the index of the entity that will end the next page
-            const pageEndIdx = count >= (pageIdx + 2) * pageSize ? (pageIdx + 2) * pageSize : count
-
-            // No need in fetching - entity already in vuex
-            if (results.length >= pageEndIdx) return commit({ type: 'setPage', diff })
-
-            // Fetching
+            const nextPage = pageIdx + 2 //Next page num - e.g pageIdx = 0 next page = 2
+            const endIdx = nextPage * pageSize //The index of the last entity in the next page (if the page is full)
+            const pageEndIdx = totalEntities >= endIdx ? endIdx : totalEntities //Checking what is the end index even if the page is not full
+            
             try {
-                const newCategoryData = await swapiService.getNextPageFromSwapi(category, filterBy)
+                if (results.length < pageEndIdx) { // Fetching
+                    const newCategoryData = await swapiService.getNextPageFromSwapi(category, filterBy)
+                    commit({ type: 'setCategoryData', categoryData: newCategoryData })
+                }
                 commit({ type: 'setPage', diff })
-                commit({ type: 'setCategoryData', categoryData: newCategoryData })
             } catch (err) {
                 console.error(`Error while loading next page =>  ${err.message}`)
                 throw err
